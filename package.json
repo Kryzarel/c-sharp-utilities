@@ -1,0 +1,10 @@
+{
+  "name": "com.kryzarel.c-sharp-utilities",
+  "version": "0.0.1",
+  "displayName": "C# Utilities",
+  "description": "A set of utilities for C#.",
+  "license": "MIT",
+  "author": {
+    "name": "Kryzarel"
+  }
+}
