@@ -10,19 +10,16 @@ namespace Kryz.SharpUtils
 		/// C# doesn't give you base class private members even if you use BindingFlags.NonPublic.
 		/// We have to manually search the base class(es) to find them.
 		/// </summary>
-		public static FieldInfo GetFieldInSubclasses(this Type type, string name, BindingFlags bindingFlags)
+		public static FieldInfo? GetFieldInSubclasses(this Type type, string name, BindingFlags bindingFlags)
 		{
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
-			FieldInfo? field;
-			do
+			FieldInfo? field = null;
+			for (Type t = type; t != null && field == null; t = t.BaseType)
 			{
-				field = type.GetField(name, bindingFlags);
-				type = type.BaseType;
+				field = t.GetField(name, bindingFlags);
 			}
-			while (type != null && field == null);
-
 			return field;
 		}
 
@@ -35,12 +32,10 @@ namespace Kryz.SharpUtils
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
-			do
+			for (Type t = type; t != null; t = t.BaseType)
 			{
-				fieldInfos.AddRangeNonAlloc(type.GetFields(bindingFlags));
-				type = type.BaseType;
+				fieldInfos.AddRangeNonAlloc(t.GetFields(bindingFlags));
 			}
-			while (type != null);
 		}
 
 		/// <summary>
@@ -52,12 +47,10 @@ namespace Kryz.SharpUtils
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
-			do
+			for (Type t = type; t != null; t = t.BaseType)
 			{
-				propertyInfos.AddRangeWhere(type.GetProperties(bindingFlags), item => !item.Exists(propertyInfos));
-				type = type.BaseType;
+				propertyInfos.AddRangeWhere(t.GetProperties(bindingFlags), item => !item.Exists(propertyInfos));
 			}
-			while (type != null);
 		}
 
 		/// <summary>
@@ -69,12 +62,10 @@ namespace Kryz.SharpUtils
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
-			do
+			for (Type t = type; t != null; t = t.BaseType)
 			{
-				methodInfos.AddRangeWhere(type.GetMethods(bindingFlags), item => !item.Exists(methodInfos));
-				type = type.BaseType;
+				methodInfos.AddRangeWhere(t.GetMethods(bindingFlags), item => !item.Exists(methodInfos));
 			}
-			while (type != null);
 		}
 
 		/// <summary>
@@ -86,12 +77,10 @@ namespace Kryz.SharpUtils
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
-			do
+			for (Type t = type; t != null; t = t.BaseType)
 			{
-				fieldInfos.AddRangeWhere(type.GetFields(bindingFlags), item => item.IsDefined(attributeType));
-				type = type.BaseType;
+				fieldInfos.AddRangeWhere(t.GetFields(bindingFlags), item => item.IsDefined(attributeType));
 			}
-			while (type != null);
 		}
 
 		/// <summary>
@@ -103,12 +92,10 @@ namespace Kryz.SharpUtils
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
-			do
+			for (Type t = type; t != null; t = t.BaseType)
 			{
-				propertyInfos.AddRangeWhere(type.GetProperties(bindingFlags), item => item.IsDefined(attributeType) && !item.Exists(propertyInfos));
-				type = type.BaseType;
+				propertyInfos.AddRangeWhere(t.GetProperties(bindingFlags), item => item.IsDefined(attributeType) && !item.Exists(propertyInfos));
 			}
-			while (type != null);
 		}
 
 		/// <summary>
@@ -120,12 +107,10 @@ namespace Kryz.SharpUtils
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
-			do
+			for (Type t = type; t != null; t = t.BaseType)
 			{
-				methodInfos.AddRangeWhere(type.GetMethods(bindingFlags), item => item.IsDefined(attributeType) && !item.Exists(methodInfos));
-				type = type.BaseType;
+				methodInfos.AddRangeWhere(t.GetMethods(bindingFlags), item => item.IsDefined(attributeType) && !item.Exists(methodInfos));
 			}
-			while (type != null);
 		}
 
 		public static bool HasDefaultConstructor(this Type type)
