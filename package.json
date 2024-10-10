@@ -2,7 +2,7 @@
   "name": "com.kryzarel.c-sharp-utilities",
   "version": "0.0.1",
   "displayName": "Kryz - C# Utilities",
-  "description": "A set of utilities for C#.",
+  "description": "A set of utilities and extension methods for C#.",
   "license": "MIT",
   "author": {
     "name": "Kryzarel"
