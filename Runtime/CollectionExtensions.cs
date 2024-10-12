@@ -41,16 +41,35 @@ namespace Kryz.SharpUtils
 			}
 		}
 
-		public static bool Contains<T>(this IReadOnlyList<T?> list, T value) where T : class
+		public static int IndexOf<T>(this IReadOnlyList<T> list, T value, IEqualityComparer<T>? comparer = null)
+		{
+			comparer ??= EqualityComparer<T>.Default;
+
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (comparer.Equals(list[i], value))
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		public static bool Contains<T>(this IReadOnlyList<T> list, T value)
+		{
+			return list.IndexOf(value) >= 0;
+		}
+
+		public static int FindIndex<T>(this IReadOnlyList<T> list, Func<T, bool> predicate)
 		{
 			for (int i = 0; i < list.Count; i++)
 			{
-				if (list[i] == value)
+				if (predicate(list[i]))
 				{
-					return true;
+					return i;
 				}
 			}
-			return false;
+			return -1;
 		}
 	}
 }
