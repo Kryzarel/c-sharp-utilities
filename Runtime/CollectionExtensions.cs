@@ -5,13 +5,23 @@ namespace Kryz.SharpUtils
 {
 	public static class CollectionExtensions
 	{
+		public static bool TryEnsureCapacity(int currentCapacity, int desiredCapacity, out int newCapacity)
+		{
+			if (desiredCapacity > currentCapacity)
+			{
+				newCapacity = (int)Math.Min(int.MaxValue, (uint)currentCapacity * 2);
+				newCapacity = Math.Max(newCapacity, desiredCapacity);
+				return true;
+			}
+			newCapacity = currentCapacity;
+			return false;
+		}
+
 		public static void EnsureCapacity<T>(this List<T> list, int capacity)
 		{
-			int currentCapacity = list.Capacity;
-			if (capacity > currentCapacity)
+			if (TryEnsureCapacity(list.Capacity, capacity, out int newCapacity))
 			{
-				int newCapacity = (int)Math.Min(int.MaxValue, (uint)currentCapacity * 2);
-				list.Capacity = Math.Max(capacity, newCapacity);
+				list.Capacity = newCapacity;
 			}
 		}
 
