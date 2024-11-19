@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Kryz.SharpUtils
+namespace Kryz.Utils
 {
 	public static class ObjectCreator
 	{

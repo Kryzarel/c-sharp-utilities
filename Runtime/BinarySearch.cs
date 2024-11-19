@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Kryz.SharpUtils
+namespace Kryz.Utils
 {
 	public static class BinarySearch
 	{

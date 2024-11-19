@@ -1,4 +1,4 @@
-namespace Kryz.SharpUtils
+namespace Kryz.Utils
 {
 	public static class FlagUtils
 	{

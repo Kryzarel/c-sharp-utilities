@@ -1,6 +1,6 @@
 {
-    "name": "Kryz.SharpUtils",
-    "rootNamespace": "Kryz.SharpUtils",
+    "name": "Kryz.Utils",
+    "rootNamespace": "Kryz.Utils",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
