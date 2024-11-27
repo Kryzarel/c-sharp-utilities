@@ -1,0 +1,16 @@
+{
+    "name": "Kryz.Collections",
+    "rootNamespace": "Kryz.Collections",
+    "references": [
+        "Kryz.Utils"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
