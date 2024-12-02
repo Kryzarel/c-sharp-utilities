@@ -7,7 +7,7 @@ namespace Kryz.Utils
 	public static class TypeExtensionsImplicitCast
 	{
 		private const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
-		private static readonly MethodInfo assignMethod = typeof(TypeExtensions).GetMethod(nameof(Assign), flags);
+		private static readonly MethodInfo assignMethod = typeof(TypeExtensionsImplicitCast).GetMethod(nameof(Assign), flags);
 		private static readonly Dictionary<(Type, Type), bool> implicitCastCache = new();
 		private static readonly Dictionary<Type, MethodInfo> genericAssignCache = new();
 		private static readonly Dictionary<Type, object[]> objectCache = new();
@@ -16,7 +16,7 @@ namespace Kryz.Utils
 
 		public static bool IsImplicitlyCastableTo(this Type type, Type target)
 		{
-			if (type == typeof(void) || target == typeof(void))
+			if (type == null || target == null || type == typeof(void) || target == typeof(void))
 			{
 				return false;
 			}
