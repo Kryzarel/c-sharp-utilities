@@ -10,15 +10,20 @@ namespace Kryz.Utils
 		private static readonly MethodInfo assignMethod = typeof(TypeExtensionsImplicitCast).GetMethod(nameof(Assign), flags);
 		private static readonly Dictionary<(Type, Type), bool> implicitCastCache = new();
 		private static readonly Dictionary<Type, MethodInfo> genericAssignCache = new();
-		private static readonly Dictionary<Type, object[]> objectCache = new();
+		private static readonly Dictionary<Type, object[]> paramCache = new();
 
 		private static T Assign<T>(T value) => value;
 
 		public static bool IsImplicitlyCastableTo(this Type type, Type target)
 		{
-			if (type == null || target == null || type == typeof(void) || target == typeof(void))
+			if (type == null || target == null || type == typeof(void) != (target == typeof(void)))
 			{
 				return false;
+			}
+
+			if (type == target || target.IsAssignableFrom(type))
+			{
+				return true;
 			}
 
 			if (!implicitCastCache.TryGetValue((type, target), out bool result))
@@ -27,9 +32,9 @@ namespace Kryz.Utils
 				{
 					genericAssignCache[target] = method = assignMethod.MakeGenericMethod(target);
 				}
-				if (!objectCache.TryGetValue(type, out object[] param))
+				if (!paramCache.TryGetValue(type, out object[] param))
 				{
-					objectCache[type] = param = new object[] { ObjectCreator.Create(type) };
+					paramCache[type] = param = new object[] { ObjectCreator.Create(type) };
 				}
 				implicitCastCache[(type, target)] = result = method.InvokeSafe(null, param);
 			}
