@@ -118,6 +118,17 @@ namespace Kryz.Utils
 			return type.IsValueType || type.GetConstructor(Type.EmptyTypes) != null;
 		}
 
+		public static Type GetMemberType(this MemberInfo memberInfo)
+		{
+			return memberInfo switch
+			{
+				FieldInfo fieldInfo => fieldInfo.FieldType,
+				PropertyInfo propertyInfo => propertyInfo.PropertyType,
+				MethodInfo methodInfo => methodInfo.ReturnType,
+				_ => throw new NotImplementedException(),
+			};
+		}
+
 		private static bool Exists(this MethodInfo method, List<MethodInfo> infos)
 		{
 			MethodInfo methodBase = method.GetBaseDefinition();
