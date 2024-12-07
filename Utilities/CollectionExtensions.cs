@@ -51,6 +51,26 @@ namespace Kryz.Utils
 			}
 		}
 
+		public static bool ContentEquals<T>(this IReadOnlyList<T> a, IReadOnlyList<T> b, IEqualityComparer<T>? comparer = null)
+		{
+			if (a.Count != b.Count)
+			{
+				return false;
+			}
+
+			comparer ??= EqualityComparer<T>.Default;
+
+			int count = a.Count;
+			for (int i = 0; i < count; i++)
+			{
+				if (!comparer.Equals(a[i], b[i]))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		public static int IndexOf<T>(this IReadOnlyList<T> list, T value, IEqualityComparer<T>? comparer = null)
 		{
 			comparer ??= EqualityComparer<T>.Default;
