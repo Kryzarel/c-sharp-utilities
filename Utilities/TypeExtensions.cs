@@ -125,6 +125,7 @@ namespace Kryz.Utils
 				FieldInfo fieldInfo => fieldInfo.FieldType,
 				PropertyInfo propertyInfo => propertyInfo.PropertyType,
 				MethodInfo methodInfo => methodInfo.ReturnType,
+				EventInfo eventInfo => eventInfo.EventHandlerType,
 				_ => throw new NotImplementedException(),
 			};
 		}
