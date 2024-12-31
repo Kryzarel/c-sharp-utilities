@@ -34,7 +34,6 @@ namespace Kryz.Collections
 			set => array[index] = value;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public NonAllocList(int capacity, ArrayPool<T>? pool = null)
 		{
 			arrayPool = pool ?? ArrayPool<T>.Shared;
@@ -70,7 +69,7 @@ namespace Kryz.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(T item)
 		{
-			int index = Array.IndexOf(array, item, 0, count);
+			int index = IndexOf(item);
 			if (index >= 0)
 			{
 				RemoveAt(index);
@@ -130,7 +129,6 @@ namespace Kryz.Collections
 			count = 0;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Dispose()
 		{
 			Clear();
@@ -138,7 +136,6 @@ namespace Kryz.Collections
 			array = null!;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureCapacity(int capacity)
 		{
 			if (Utils.CollectionExtensions.TryEnsureCapacity(array.Length, capacity, out int newCapacity))
@@ -151,7 +148,6 @@ namespace Kryz.Collections
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly Enumerator GetEnumerator() => new(array, count);
 
 		readonly IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
@@ -178,7 +174,7 @@ namespace Kryz.Collections
 
 			public bool MoveNext()
 			{
-				while (index < count)
+				if (index < count)
 				{
 					current = array[index++];
 					return true;
