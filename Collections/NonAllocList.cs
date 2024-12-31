@@ -105,6 +105,12 @@ namespace Kryz.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public readonly int IndexOf(T item, int index)
+		{
+			return Array.IndexOf(array, item, index, count - index);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public readonly bool Contains(T item)
 		{
 			return Array.IndexOf(array, item, 0, count) >= 0;
