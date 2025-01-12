@@ -1,0 +1,16 @@
+{
+    "name": "Kryz.Pools",
+    "rootNamespace": "Kryz.Pools",
+    "references": [
+        "GUID:6562b918f46669b4ba9dd7649c5ee487"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
