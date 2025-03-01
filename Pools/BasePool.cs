@@ -8,6 +8,7 @@ namespace Kryz.Pools
 	{
 		private int maxSize;
 		private int count;
+		private int activeCount;
 		private T[] array;
 		private readonly ArrayPool<T> arrayPool;
 
@@ -23,6 +24,12 @@ namespace Kryz.Pools
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => count;
+		}
+
+		public int ActiveCount
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => activeCount;
 		}
 
 		public int Capacity
@@ -42,6 +49,8 @@ namespace Kryz.Pools
 		public T Get()
 		{
 			T item = count > 0 ? array[--count] : Create();
+			array[count] = default!;
+			activeCount++;
 			OnGet(item);
 			return item;
 		}
@@ -58,6 +67,7 @@ namespace Kryz.Pools
 				EnsureCapacity(count + 1);
 			}
 			array[count++] = item;
+			activeCount = Math.Max(0, activeCount - 1);
 		}
 
 		public void Fill(int desiredCount)
