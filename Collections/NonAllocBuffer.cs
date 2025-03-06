@@ -95,7 +95,7 @@ namespace Kryz.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void EnsureCapacity(int capacity)
 		{
-			if (CollectionExtensions.TryEnsureCapacity(span.Length, capacity, out int newCapacity))
+			if (span.Length.TryEnsureCapacity(capacity, out int newCapacity))
 			{
 				T[]? oldArray = array;
 				Span<T> oldSpan = span[..count];

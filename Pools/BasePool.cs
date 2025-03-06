@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
+using Kryz.Utils;
 
 namespace Kryz.Pools
 {
@@ -83,7 +84,7 @@ namespace Kryz.Pools
 
 		private void EnsureCapacity(int capacity)
 		{
-			if (Utils.CollectionExtensions.TryEnsureCapacity(array.Length, capacity, out int newCapacity))
+			if (array.Length.TryEnsureCapacity(capacity, out int newCapacity))
 			{
 				T[] oldArray = array;
 				array = arrayPool.Rent(newCapacity);
