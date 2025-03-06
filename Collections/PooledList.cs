@@ -36,7 +36,7 @@ namespace Kryz.Collections
 			set => array[index] = value;
 		}
 
-		public PooledList(int capacity, ArrayPool<T>? pool = null)
+		public PooledList(int capacity = 0, ArrayPool<T>? pool = null)
 		{
 			arrayPool = pool ?? ArrayPool<T>.Shared;
 			array = arrayPool.Rent(Math.Max(capacity, 16));
@@ -131,7 +131,6 @@ namespace Kryz.Collections
 			Array.Copy(array, 0, list.array, 0, count);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
 			Array.Clear(array, 0, count);

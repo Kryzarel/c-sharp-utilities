@@ -9,6 +9,7 @@ namespace Kryz.Collections
 {
 	public struct NonAllocList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
+		private int version;
 		private int count;
 		private T[] array;
 		private readonly ArrayPool<T> arrayPool;
@@ -35,14 +36,14 @@ namespace Kryz.Collections
 			set => array[index] = value;
 		}
 
-		public NonAllocList(int capacity, ArrayPool<T>? pool = null)
+		public NonAllocList(int capacity = 0, ArrayPool<T>? pool = null)
 		{
 			arrayPool = pool ?? ArrayPool<T>.Shared;
 			array = arrayPool.Rent(Math.Max(capacity, 16));
 			count = 0;
+			version = 0;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
 			if (count == array.Length)
@@ -50,9 +51,9 @@ namespace Kryz.Collections
 				EnsureCapacity(count + 1);
 			}
 			array[count++] = item;
+			version++;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Insert(int index, T item)
 		{
 			if (count == array.Length)
@@ -65,9 +66,9 @@ namespace Kryz.Collections
 			}
 			array[index] = item;
 			count++;
+			version++;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(T item)
 		{
 			int index = IndexOf(item);
@@ -79,7 +80,6 @@ namespace Kryz.Collections
 			return false;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void RemoveAt(int index)
 		{
 			if ((uint)index >= (uint)count)
@@ -87,7 +87,9 @@ namespace Kryz.Collections
 				throw new ArgumentOutOfRangeException(nameof(index), "Index must be less than the size of the collection");
 			}
 
+			version++;
 			count--;
+
 			if (index < count)
 			{
 				Array.Copy(array, index + 1, array, index, count - index);
@@ -129,11 +131,11 @@ namespace Kryz.Collections
 			Array.Copy(array, 0, list.array, 0, count);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Clear()
 		{
 			Array.Clear(array, 0, count);
 			count = 0;
+			version++;
 		}
 
 		public void Dispose()
@@ -155,15 +157,16 @@ namespace Kryz.Collections
 			}
 		}
 
-		public readonly Enumerator GetEnumerator() => new(array, count);
+		public readonly Enumerator GetEnumerator() => new(this);
 
 		readonly IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 		readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 		public struct Enumerator : IEnumerator<T>
 		{
-			private readonly T[] array;
+			private readonly NonAllocList<T> list;
 			private readonly int count;
+			private readonly int version;
 
 			private int index;
 			private T current;
@@ -171,19 +174,27 @@ namespace Kryz.Collections
 			public readonly T Current => current;
 			readonly object? IEnumerator.Current => current;
 
-			public Enumerator(T[] array, int count = 0)
+			public Enumerator(NonAllocList<T> list)
 			{
-				this.array = array;
-				this.count = count > 0 ? count : array.Length;
+				this.list = list;
+				count = list.count;
+				version = list.version;
 				index = 0;
 				current = default!;
 			}
 
 			public bool MoveNext()
 			{
+				if (version != list.version)
+				{
+					index = list.count + 1;
+					current = default!;
+					throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
+				}
+
 				if (index < count)
 				{
-					current = array[index++];
+					current = list[index++];
 					return true;
 				}
 				return false;
