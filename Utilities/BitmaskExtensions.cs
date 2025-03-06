@@ -1,6 +1,6 @@
 namespace Kryz.Utils
 {
-	public static class FlagUtils
+	public static class BitmaskExtensions
 	{
 		public static bool HasFlag(this byte mask, byte flag)
 		{
