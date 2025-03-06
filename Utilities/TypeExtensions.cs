@@ -49,7 +49,7 @@ namespace Kryz.Utils
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				propertyInfos.AddRangeWhere(t.GetProperties(bindingFlags), item => !item.Exists(propertyInfos));
+				propertyInfos.AddRangeWhere(t.GetProperties(bindingFlags), item => !item.IsDuplicate(propertyInfos));
 			}
 		}
 
@@ -64,7 +64,7 @@ namespace Kryz.Utils
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				methodInfos.AddRangeWhere(t.GetMethods(bindingFlags), item => !item.Exists(methodInfos));
+				methodInfos.AddRangeWhere(t.GetMethods(bindingFlags), item => !item.IsDuplicate(methodInfos));
 			}
 		}
 
@@ -94,7 +94,7 @@ namespace Kryz.Utils
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				propertyInfos.AddRangeWhere(t.GetProperties(bindingFlags), item => item.IsDefined(attributeType) && !item.Exists(propertyInfos));
+				propertyInfos.AddRangeWhere(t.GetProperties(bindingFlags), item => item.IsDefined(attributeType) && !item.IsDuplicate(propertyInfos));
 			}
 		}
 
@@ -109,7 +109,7 @@ namespace Kryz.Utils
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				methodInfos.AddRangeWhere(t.GetMethods(bindingFlags), item => item.IsDefined(attributeType) && !item.Exists(methodInfos));
+				methodInfos.AddRangeWhere(t.GetMethods(bindingFlags), item => item.IsDefined(attributeType) && !item.IsDuplicate(methodInfos));
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace Kryz.Utils
 			};
 		}
 
-		private static bool Exists(this MethodInfo method, List<MethodInfo> infos)
+		private static bool IsDuplicate(this MethodInfo method, IReadOnlyList<MethodInfo> infos)
 		{
 			MethodInfo methodBase = method.GetBaseDefinition();
 			foreach (MethodInfo item in infos)
@@ -144,7 +144,7 @@ namespace Kryz.Utils
 			return false;
 		}
 
-		private static bool Exists(this PropertyInfo property, List<PropertyInfo> infos)
+		private static bool IsDuplicate(this PropertyInfo property, IReadOnlyList<PropertyInfo> infos)
 		{
 			MethodInfo? propertyGetterBase = property.GetMethod?.GetBaseDefinition();
 			MethodInfo? propertySetterBase = property.SetMethod?.GetBaseDefinition();
