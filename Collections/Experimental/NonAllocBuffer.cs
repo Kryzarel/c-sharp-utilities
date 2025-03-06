@@ -3,7 +3,7 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 using Kryz.Utils;
 
-namespace Kryz.Collections
+namespace Kryz.Collections.Experimental
 {
 	public ref struct NonAllocBuffer<T>
 	{

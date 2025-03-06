@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Kryz.Collections.Tests.Editor
+namespace Kryz.Collections.Experimental.Tests.Editor
 {
 	/// <summary>
 	/// Taken from: https://stackoverflow.com/a/55879736

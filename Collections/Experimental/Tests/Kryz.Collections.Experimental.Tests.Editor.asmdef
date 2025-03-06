@@ -1,6 +1,6 @@
 {
-    "name": "Kryz.Collections.Tests.Editor",
-    "rootNamespace": "Kryz.Collections.Tests.Editor",
+    "name": "Kryz.Collections.Experimental.Tests.Editor",
+    "rootNamespace": "Kryz.Collections.Experimental.Tests.Editor",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
