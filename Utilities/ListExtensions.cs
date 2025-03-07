@@ -13,7 +13,7 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void AddRange<T>(this List<T> list, Span<T> span)
+		public static void AddRange<T>(this List<T> list, ReadOnlySpan<T> span)
 		{
 			list.EnsureCapacity(list.Count + span.Length);
 			list.AddRange<T, List<T>>(span);
@@ -22,13 +22,13 @@ namespace Kryz.Utils
 		public static void AddRangeNonAlloc<T, TAdd>(this List<T> list, TAdd toAdd) where TAdd : IReadOnlyList<T>
 		{
 			list.EnsureCapacity(list.Count + toAdd.Count);
-			list.AddRangeNonAlloc<T, List<T>, TAdd>(toAdd);
+			list.AddRange_IReadOnlyList<T, List<T>, TAdd>(toAdd);
 		}
 
 		public static void AddRangeWhere<T, TAdd>(this List<T> list, TAdd toAdd, Func<T, bool> predicate) where TAdd : IReadOnlyList<T>
 		{
 			list.EnsureCapacity(list.Count + toAdd.Count);
-			list.AddRangeWhere<T, List<T>, TAdd>(toAdd, predicate);
+			list.AddRangeWhere_IReadOnlyList(toAdd, predicate);
 		}
 	}
 }

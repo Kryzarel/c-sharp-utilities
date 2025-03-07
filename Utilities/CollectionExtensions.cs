@@ -18,7 +18,13 @@ namespace Kryz.Utils
 			return false;
 		}
 
-		public static void AddRangeNonAlloc<T, TList, TAdd>(this TList list, TAdd toAdd) where TList : IList<T> where TAdd : IEnumerable<T>
+		/// <summary>
+		/// <para>Generic version of AddRange, accepting any <see cref="IList{T}"/> as target and any <see cref="IEnumerable{T}"/> as input.</para>
+		/// <para>By using generics we can prevent allocations from boxing (i.e. if you pass a struct implementing <see cref="IList{T}"/> or <see cref="IEnumerable{T}"/>, it will NOT be boxed).
+		/// And potentially allows the compiler to use concrete methods from the collections, rather than virtual methods, increasing performance.</para>
+		/// <para>If the collection implements a value type enumerator, this also prevents allocations when using foreach. If it does not, it is recommended to use the IList or IReadOnlyList versions.</para>
+		/// </summary>
+		public static void AddRange_IEnumerable<T, TList, TAdd>(this TList list, TAdd toAdd) where TList : IList<T> where TAdd : IEnumerable<T>
 		{
 			foreach (T item in toAdd)
 			{
@@ -26,7 +32,13 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void AddRangeWhere<T, TList, TAdd>(this TList list, TAdd toAdd, Func<T, bool> predicate) where TList : IList<T> where TAdd : IEnumerable<T>
+		/// <summary>
+		/// <para>Generic version of AddRange, with a predicate to filter elements to be added, accepting any <see cref="IList{T}"/> as target and any <see cref="IEnumerable{T}"/> as input.</para>
+		/// <para>By using generics we can prevent allocations from boxing (i.e. if you pass a struct implementing <see cref="IList{T}"/> or <see cref="IEnumerable{T}"/>, it will NOT be boxed).
+		/// And potentially allows the compiler to use concrete methods from the collections, rather than virtual methods, increasing performance.</para>
+		/// <para>If the collection implements a value type enumerator, this also prevents allocations when using foreach. If it does not, it is recommended to use the IList or IReadOnlyList versions.</para>
+		/// </summary>
+		public static void AddRangeWhere_IEnumerable<T, TList, TAdd>(this TList list, TAdd toAdd, Func<T, bool> predicate) where TList : IList<T> where TAdd : IEnumerable<T>
 		{
 			foreach (T item in toAdd)
 			{
@@ -37,7 +49,12 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void AddRangeNonAlloc<T, TList>(this TList list, IList<T> toAdd) where TList : IList<T>
+		/// <summary>
+		/// <para>Generic version of AddRange, accepting any <see cref="IList{T}"/> as target and any <see cref="IList{T}"/> as input.</para>
+		/// <para>By using generics we can prevent allocations from boxing (i.e. if you pass a struct implementing <see cref="IList{T}"/>, it will NOT be boxed).
+		/// And potentially allows the compiler to use concrete methods from the collections, rather than virtual methods, increasing performance.</para>
+		/// </summary>
+		public static void AddRange_IList<T, TList, TAdd>(this TList list, TAdd toAdd) where TList : IList<T> where TAdd : IList<T>
 		{
 			int count = toAdd.Count;
 			for (int i = 0; i < count; i++)
@@ -46,7 +63,12 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void AddRangeWhere<T, TList>(this TList list, IList<T> toAdd, Func<T, bool> predicate) where TList : IList<T>
+		/// <summary>
+		/// <para>Generic version of AddRange, with a predicate to filter elements to be added, accepting any <see cref="IList{T}"/> as target and any <see cref="IList{T}"/> as input.</para>
+		/// <para>By using generics we can prevent allocations from boxing (i.e. if you pass a struct implementing <see cref="IList{T}"/>, it will NOT be boxed).
+		/// And potentially allows the compiler to use concrete methods from the collections, rather than virtual methods, increasing performance.</para>
+		/// </summary>
+		public static void AddRangeWhere_IList<T, TList, TAdd>(this TList list, TAdd toAdd, Func<T, bool> predicate) where TList : IList<T> where TAdd : IList<T>
 		{
 			int count = toAdd.Count;
 			for (int i = 0; i < count; i++)
@@ -59,7 +81,12 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void AddRangeNonAlloc<T, TList>(this TList list, IReadOnlyList<T> toAdd) where TList : IList<T>
+		/// <summary>
+		/// <para>Generic version of AddRange, accepting any <see cref="IList{T}"/> as target and any <see cref="IReadOnlyList{T}"/> as input.</para>
+		/// <para>By using generics we can prevent allocations from boxing (i.e. if you pass a struct implementing <see cref="IList{T}"/> or <see cref="IReadOnlyList{T}"/>, it will NOT be boxed).
+		/// And potentially allows the compiler to use concrete methods from the collections, rather than virtual methods, increasing performance.</para>
+		/// </summary>
+		public static void AddRange_IReadOnlyList<T, TList, TAdd>(this TList list, TAdd toAdd) where TList : IList<T> where TAdd : IReadOnlyList<T>
 		{
 			int count = toAdd.Count;
 			for (int i = 0; i < count; i++)
@@ -68,7 +95,12 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void AddRangeWhere<T, TList>(this TList list, IReadOnlyList<T> toAdd, Func<T, bool> predicate) where TList : IList<T>
+		/// <summary>
+		/// <para>Generic version of AddRange, with a predicate to filter elements to be added, accepting any <see cref="IList{T}"/> as target and any <see cref="IReadOnlyList{T}"/> as input.</para>
+		/// <para>By using generics we can prevent allocations from boxing (i.e. if you pass a struct implementing <see cref="IList{T}"/> or <see cref="IReadOnlyList{T}"/>, it will NOT be boxed).
+		/// And potentially allows the compiler to use concrete methods from the collections, rather than virtual methods, increasing performance.</para>
+		/// </summary>
+		public static void AddRangeWhere_IReadOnlyList<T, TList, TAdd>(this TList list, TAdd toAdd, Func<T, bool> predicate) where TList : IList<T> where TAdd : IReadOnlyList<T>
 		{
 			int count = toAdd.Count;
 			for (int i = 0; i < count; i++)
@@ -81,7 +113,12 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void AddRange<T, TList>(this TList list, Span<T> toAdd) where TList : IList<T>
+		/// <summary>
+		/// <para>Generic version of AddRange, with a predicate to filter elements to be added, accepting any <see cref="IList{T}"/> as target and a <see cref="ReadOnlySpan{T}"/> as input.</para>
+		/// <para>By using generics we can prevent allocations from boxing (i.e. if you pass a struct implementing <see cref="IList{T}"/>, it will NOT be boxed).
+		/// And potentially allows the compiler to use concrete methods from the collections, rather than virtual methods, increasing performance.</para>
+		/// </summary>
+		public static void AddRange<T, TList>(this TList list, ReadOnlySpan<T> toAdd) where TList : IList<T>
 		{
 			int count = toAdd.Length;
 			for (int i = 0; i < count; i++)
@@ -90,7 +127,12 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void AddRangeWhere<T, TList>(this TList list, Span<T> toAdd, Func<T, bool> predicate) where TList : IList<T>
+		/// <summary>
+		/// <para>Generic version of AddRange, with a predicate to filter elements to be added, accepting any <see cref="IList{T}"/> as target and a <see cref="Span{T}"/> as input.</para>
+		/// <para>By using generics we can prevent allocations from boxing (i.e. if you pass a struct implementing <see cref="IList{T}"/>, it will NOT be boxed).
+		/// And potentially allows the compiler to use concrete methods from the collections, rather than virtual methods, increasing performance.</para>
+		/// </summary>
+		public static void AddRangeWhere<T, TList>(this TList list, ReadOnlySpan<T> toAdd, Func<T, bool> predicate) where TList : IList<T>
 		{
 			int count = toAdd.Length;
 			for (int i = 0; i < count; i++)
@@ -113,6 +155,18 @@ namespace Kryz.Utils
 		public static bool ContentEquals<T, TComp>(this IReadOnlyList<T> a, IReadOnlyList<T> b, TComp comparer) where TComp : IEqualityComparer<T>
 		{
 			return a.ContentEquals<T, IReadOnlyList<T>, IReadOnlyList<T>, TComp>(b, comparer);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool ContentEquals<T, TList>(this TList a, TList b) where TList : IReadOnlyList<T>
+		{
+			return a.ContentEquals<T, TList, TList, EqualityComparer<T>>(b, EqualityComparer<T>.Default);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool ContentEquals<T, TList, TComp>(this TList a, TList b, TComp comp) where TList : IReadOnlyList<T> where TComp : IEqualityComparer<T>
+		{
+			return a.ContentEquals<T, TList, TList, TComp>(b, comp);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -177,7 +231,8 @@ namespace Kryz.Utils
 
 		public static int FindIndex<T, TList>(this TList list, Func<T, bool> predicate) where TList : IReadOnlyList<T>
 		{
-			for (int i = 0; i < list.Count; i++)
+			int count = list.Count;
+			for (int i = 0; i < count; i++)
 			{
 				if (predicate(list[i]))
 				{
