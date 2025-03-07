@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Kryz.Utils
 {
-	public static class BinarySearch
+	public static class BinarySearchExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int BinarySearchLeftmost<T, TList>(this TList list, T value) where TList : IReadOnlyList<T>
