@@ -242,10 +242,16 @@ namespace Kryz.Utils
 			return -1;
 		}
 
-		public static T[] ToArray<T, TList>(this TList list) where TList : IList<T>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static T[] ToArray<T>(this ICollection<T> collection)
 		{
-			T[] results = new T[list.Count];
-			list.CopyTo(results, 0);
+			return collection.ToArray<T, ICollection<T>>();
+		}
+
+		public static T[] ToArray<T, TList>(this TList collection) where TList : ICollection<T>
+		{
+			T[] results = new T[collection.Count];
+			collection.CopyTo(results, 0);
 			return results;
 		}
 	}
