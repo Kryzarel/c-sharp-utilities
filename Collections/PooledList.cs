@@ -87,8 +87,8 @@ namespace Kryz.Collections
 				throw new ArgumentOutOfRangeException(nameof(index), "Index must be less than the size of the collection");
 			}
 
-			version++;
 			count--;
+			version++;
 
 			if (index < count)
 			{
@@ -102,38 +102,26 @@ namespace Kryz.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item)
-		{
-			return Array.IndexOf(array, item, 0, count);
-		}
+		public int IndexOf(T item) => Array.IndexOf(array, item, 0, count);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item, int index)
-		{
-			return Array.IndexOf(array, item, index, count - index);
-		}
+		public int IndexOf(T item, int index) => Array.IndexOf(array, item, index, count - index);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Contains(T item)
-		{
-			return Array.IndexOf(array, item, 0, count) >= 0;
-		}
+		public bool Contains(T item) => Array.IndexOf(array, item, 0, count) >= 0;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(T[] array, int arrayIndex)
-		{
-			Array.Copy(this.array, 0, array, arrayIndex, count);
-		}
+		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(this.array, 0, array, arrayIndex, count);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(PooledList<T> list)
-		{
-			Array.Copy(array, 0, list.array, 0, count);
-		}
+		public void CopyTo(PooledList<T> list) => Array.Copy(array, 0, list.array, 0, count);
 
 		public void Clear()
 		{
-			Array.Clear(array, 0, count);
+			if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+			{
+				Array.Clear(array, 0, count);
+			}
 			count = 0;
 			version++;
 		}
@@ -152,7 +140,10 @@ namespace Kryz.Collections
 				T[] oldArray = array;
 				array = arrayPool.Rent(newCapacity);
 				Array.Copy(oldArray, array, count);
-				Array.Clear(oldArray, 0, count);
+				if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+				{
+					Array.Clear(oldArray, 0, count);
+				}
 				arrayPool.Return(oldArray);
 			}
 		}
