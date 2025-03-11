@@ -11,8 +11,24 @@ namespace Kryz.Collections
 	{
 		private int version;
 		private int count;
-		private T[] array;
-		private readonly ArrayPool<T> arrayPool;
+		private T[] _array;
+		private ArrayPool<T> _arrayPool;
+
+		private T[] array
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _array ??= arrayPool.Rent(16);
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set => _array = value;
+		}
+
+		private ArrayPool<T> arrayPool
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => _arrayPool ??= ArrayPool<T>.Shared;
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set => _arrayPool = value;
+		}
 
 		public readonly bool IsReadOnly => false;
 
@@ -22,13 +38,13 @@ namespace Kryz.Collections
 			get => count;
 		}
 
-		public readonly int Capacity
+		public int Capacity
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => array.Length;
 		}
 
-		public readonly T this[int index]
+		public T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => array[index];
@@ -36,12 +52,12 @@ namespace Kryz.Collections
 			set => array[index] = value;
 		}
 
-		public NonAllocList(int capacity = 0, ArrayPool<T>? pool = null)
+		public NonAllocList(int capacity, ArrayPool<T>? pool = null)
 		{
-			arrayPool = pool ?? ArrayPool<T>.Shared;
-			array = arrayPool.Rent(Math.Max(capacity, 16));
 			count = 0;
 			version = 0;
+			_arrayPool = pool ?? ArrayPool<T>.Shared;
+			_array = _arrayPool.Rent(Math.Max(capacity, 16));
 		}
 
 		public void Add(T item)
@@ -102,19 +118,19 @@ namespace Kryz.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public readonly int IndexOf(T item) => Array.IndexOf(array, item, 0, count);
+		public int IndexOf(T item) => Array.IndexOf(array, item, 0, count);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public readonly int IndexOf(T item, int index) => Array.IndexOf(array, item, index, count - index);
+		public int IndexOf(T item, int index) => Array.IndexOf(array, item, index, count - index);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public readonly bool Contains(T item) => Array.IndexOf(array, item, 0, count) >= 0;
+		public bool Contains(T item) => Array.IndexOf(array, item, 0, count) >= 0;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public readonly void CopyTo(T[] array, int arrayIndex) => Array.Copy(this.array, 0, array, arrayIndex, count);
+		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(this.array, 0, array, arrayIndex, count);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public readonly void CopyTo(NonAllocList<T> list) => Array.Copy(array, 0, list.array, 0, count);
+		public void CopyTo(NonAllocList<T> list) => Array.Copy(array, 0, list.array, 0, count);
 
 		public void Clear()
 		{
