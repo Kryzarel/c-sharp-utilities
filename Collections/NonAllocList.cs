@@ -1,13 +1,11 @@
 using System;
 using System.Buffers;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Kryz.Utils;
 
 namespace Kryz.Collections
 {
-	public struct NonAllocList<T> : IList<T>, IReadOnlyList<T>, IDisposable
+	public ref struct NonAllocList<T>
 	{
 		private int version;
 		private int count;
@@ -29,8 +27,6 @@ namespace Kryz.Collections
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set => _arrayPool = value;
 		}
-
-		public readonly bool IsReadOnly => false;
 
 		public readonly int Count
 		{
@@ -132,6 +128,12 @@ namespace Kryz.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void CopyTo(NonAllocList<T> list) => Array.Copy(array, 0, list.array, 0, count);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ReadOnlySpan<T> AsSpan() => array[..count];
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator ReadOnlySpan<T>(NonAllocList<T> value) => value.AsSpan();
+
 		public void Clear()
 		{
 			if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
@@ -151,7 +153,7 @@ namespace Kryz.Collections
 
 		public void EnsureCapacity(int capacity)
 		{
-			if (array.Length.TryEnsureCapacity(capacity, out int newCapacity))
+			if (array.Length.TryGetNewCapacity(capacity, out int newCapacity))
 			{
 				T[] oldArray = array;
 				array = arrayPool.Rent(newCapacity);
@@ -164,12 +166,17 @@ namespace Kryz.Collections
 			}
 		}
 
+		public T[] ToArray()
+		{
+			if (count == 0) return Array.Empty<T>();
+			T[] results = new T[count];
+			Array.Copy(array, results, count);
+			return results;
+		}
+
 		public readonly Enumerator GetEnumerator() => new(this);
 
-		readonly IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
-		readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-		public struct Enumerator : IEnumerator<T>
+		public ref struct Enumerator
 		{
 			private readonly NonAllocList<T> list;
 			private readonly int count;
@@ -179,7 +186,6 @@ namespace Kryz.Collections
 			private T current;
 
 			public readonly T Current => current;
-			readonly object? IEnumerator.Current => current;
 
 			public Enumerator(NonAllocList<T> list)
 			{

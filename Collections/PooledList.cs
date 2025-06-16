@@ -135,7 +135,7 @@ namespace Kryz.Collections
 
 		public void EnsureCapacity(int capacity)
 		{
-			if (array.Length.TryEnsureCapacity(capacity, out int newCapacity))
+			if (array.Length.TryGetNewCapacity(capacity, out int newCapacity))
 			{
 				T[] oldArray = array;
 				array = arrayPool.Rent(newCapacity);

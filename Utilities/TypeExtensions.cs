@@ -12,7 +12,7 @@ namespace Kryz.Utils
 		/// </summary>
 		public static FieldInfo? GetFieldInSubclasses(this Type type, string name, BindingFlags bindingFlags)
 		{
-			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
+			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
 			FieldInfo? field = null;
@@ -29,12 +29,12 @@ namespace Kryz.Utils
 		/// </summary>
 		public static void GetAllFields(this Type type, BindingFlags bindingFlags, List<FieldInfo> fieldInfos)
 		{
-			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
+			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				fieldInfos.AddRangeNonAlloc(t.GetFields(bindingFlags));
+				fieldInfos.AddRangeNonAlloc((IReadOnlyList<FieldInfo>)t.GetFields(bindingFlags));
 			}
 		}
 
@@ -44,12 +44,18 @@ namespace Kryz.Utils
 		/// </summary>
 		public static void GetAllProperties(this Type type, BindingFlags bindingFlags, List<PropertyInfo> propertyInfos)
 		{
-			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
+			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				propertyInfos.AddRangeWhere(t.GetProperties(bindingFlags), item => !item.IsDuplicate(propertyInfos));
+				foreach (PropertyInfo item in t.GetProperties(bindingFlags))
+				{
+					if (!item.IsDuplicate(propertyInfos))
+					{
+						propertyInfos.Add(item);
+					}
+				}
 			}
 		}
 
@@ -59,12 +65,18 @@ namespace Kryz.Utils
 		/// </summary>
 		public static void GetAllMethods(this Type type, BindingFlags bindingFlags, List<MethodInfo> methodInfos)
 		{
-			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
+			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				methodInfos.AddRangeWhere(t.GetMethods(bindingFlags), item => !item.IsDuplicate(methodInfos));
+				foreach (MethodInfo item in t.GetMethods(bindingFlags))
+				{
+					if (!item.IsDuplicate(methodInfos))
+					{
+						methodInfos.Add(item);
+					}
+				}
 			}
 		}
 
@@ -74,12 +86,18 @@ namespace Kryz.Utils
 		/// </summary>
 		public static void GetAllFieldsWithAttribute(this Type type, BindingFlags bindingFlags, Type attributeType, List<FieldInfo> fieldInfos)
 		{
-			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
+			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				fieldInfos.AddRangeWhere(t.GetFields(bindingFlags), item => item.IsDefined(attributeType));
+				foreach (FieldInfo item in t.GetFields(bindingFlags))
+				{
+					if (item.IsDefined(attributeType))
+					{
+						fieldInfos.Add(item);
+					}
+				}
 			}
 		}
 
@@ -89,12 +107,18 @@ namespace Kryz.Utils
 		/// </summary>
 		public static void GetAllPropertiesWithAttribute(this Type type, BindingFlags bindingFlags, Type attributeType, List<PropertyInfo> propertyInfos)
 		{
-			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
+			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				propertyInfos.AddRangeWhere(t.GetProperties(bindingFlags), item => item.IsDefined(attributeType) && !item.IsDuplicate(propertyInfos));
+				foreach (PropertyInfo item in t.GetProperties(bindingFlags))
+				{
+					if (item.IsDefined(attributeType) && !item.IsDuplicate(propertyInfos))
+					{
+						propertyInfos.Add(item);
+					}
+				}
 			}
 		}
 
@@ -104,12 +128,18 @@ namespace Kryz.Utils
 		/// </summary>
 		public static void GetAllMethodsWithAttribute(this Type type, BindingFlags bindingFlags, Type attributeType, List<MethodInfo> methodInfos)
 		{
-			// Use BindingFlags.DeclaredOnly to prevent including duplicate fields from base/derived classes
+			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
 
 			for (Type t = type; t != null; t = t.BaseType)
 			{
-				methodInfos.AddRangeWhere(t.GetMethods(bindingFlags), item => item.IsDefined(attributeType) && !item.IsDuplicate(methodInfos));
+				foreach (MethodInfo item in t.GetMethods(bindingFlags))
+				{
+					if (item.IsDefined(attributeType) && !item.IsDuplicate(methodInfos))
+					{
+						methodInfos.Add(item);
+					}
+				}
 			}
 		}
 
