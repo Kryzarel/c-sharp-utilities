@@ -9,10 +9,47 @@ namespace Kryz.Collections
 {
 	public class PooledList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
+		private static class Pool
+		{
+			private static readonly PooledList<PooledList<T>> pool = new();
+
+			public static PooledList<T> Rent(int capacity = 0, ArrayPool<T>? arrayPool = null)
+			{
+				lock (pool)
+				{
+					if (pool.count > 0)
+					{
+						PooledList<T> list = pool[pool.count - 1];
+						pool.RemoveAt(pool.count - 1);
+						Init(list, capacity, arrayPool);
+						return list;
+					}
+				}
+				return new PooledList<T>(capacity, arrayPool, isPooled: true);
+			}
+
+			public static void Return(PooledList<T> list)
+			{
+				lock (pool)
+				{
+					pool.Add(list);
+				}
+			}
+
+			private static void Init(PooledList<T> list, int capacity, ArrayPool<T>? pool)
+			{
+				list.arrayPool = pool ?? ArrayPool<T>.Shared;
+				list.array = list.arrayPool.Rent(Math.Max(capacity, 16));
+				list.count = 0;
+				list.version = 0;
+			}
+		}
+
 		private int version;
 		private int count;
 		private T[] array;
-		private readonly ArrayPool<T> arrayPool;
+		private ArrayPool<T> arrayPool;
+		private readonly bool isPooled;
 
 		public bool IsReadOnly => false;
 
@@ -36,12 +73,27 @@ namespace Kryz.Collections
 			set => array[index] = value;
 		}
 
-		public PooledList(int capacity = 0, ArrayPool<T>? pool = null)
+		public static PooledList<T> Rent(int capacity = 0, ArrayPool<T>? arrayPool = null)
 		{
-			arrayPool = pool ?? ArrayPool<T>.Shared;
-			array = arrayPool.Rent(Math.Max(capacity, 16));
+			return Pool.Rent(capacity, arrayPool);
+		}
+
+		private PooledList(int capacity, ArrayPool<T>? arrayPool, bool isPooled) : this(capacity, arrayPool)
+		{
+			this.isPooled = isPooled;
+		}
+
+		public PooledList(int capacity = 0, ArrayPool<T>? arrayPool = null)
+		{
+			this.arrayPool = arrayPool ?? ArrayPool<T>.Shared;
+			array = this.arrayPool.Rent(Math.Max(capacity, 16));
 			count = 0;
 			version = 0;
+		}
+
+		~PooledList()
+		{
+			Dispose();
 		}
 
 		public void Add(T item)
@@ -128,9 +180,20 @@ namespace Kryz.Collections
 
 		public void Dispose()
 		{
+			if (array == null || arrayPool == null)
+			{
+				return;
+			}
+
 			Clear();
 			arrayPool.Return(array);
 			array = null!;
+			arrayPool = null!;
+
+			if (isPooled)
+			{
+				Pool.Return(this);
+			}
 		}
 
 		public void EnsureCapacity(int capacity)
