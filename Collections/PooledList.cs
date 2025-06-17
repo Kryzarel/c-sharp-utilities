@@ -7,7 +7,7 @@ using Kryz.Utils;
 
 namespace Kryz.Collections
 {
-	public class PooledList<T> : IList<T>, IReadOnlyList<T>, IDisposable
+	public partial class PooledList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
 		private int version;
 		private int count;
@@ -250,88 +250,5 @@ namespace Kryz.Collections
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-		public struct Enumerator : IEnumerator<T>
-		{
-			private readonly PooledList<T> list;
-			private readonly int count;
-			private readonly int version;
-
-			private int index;
-			private T current;
-
-			public readonly T Current => current;
-			readonly object? IEnumerator.Current => current;
-
-			public Enumerator(PooledList<T> list)
-			{
-				this.list = list;
-				count = list.count;
-				version = list.version;
-				index = 0;
-				current = default!;
-			}
-
-			public bool MoveNext()
-			{
-				if (version != list.version)
-				{
-					index = list.count + 1;
-					current = default!;
-					throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
-				}
-
-				if (index < count)
-				{
-					current = list[index++];
-					return true;
-				}
-				return false;
-			}
-
-			public void Reset()
-			{
-				index = 0;
-				current = default!;
-			}
-
-			public readonly void Dispose() { }
-		}
-
-		private static class Pool
-		{
-			private static readonly PooledList<PooledList<T>> pool = new();
-
-			public static PooledList<T> Rent(int capacity = 0, ArrayPool<T>? arrayPool = null)
-			{
-				lock (pool)
-				{
-					if (pool.count > 0)
-					{
-						PooledList<T> list = pool[pool.count - 1];
-						pool.RemoveAt(pool.count - 1);
-						Init(list, capacity, arrayPool);
-						return list;
-					}
-				}
-				return new PooledList<T>(capacity, arrayPool, isPooled: true);
-			}
-
-			public static void Return(PooledList<T> list)
-			{
-				lock (pool)
-				{
-					pool.Add(list);
-				}
-			}
-
-			private static void Init(PooledList<T> list, int capacity, ArrayPool<T>? pool)
-			{
-				list.arrayPool = pool ?? ArrayPool<T>.Shared;
-				list.array = list.arrayPool.Rent(Math.Max(capacity, 16));
-				list.count = 0;
-				list.version = 0;
-			}
-		}
 	}
 }
