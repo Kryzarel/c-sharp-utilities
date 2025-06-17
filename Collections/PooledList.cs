@@ -9,42 +9,6 @@ namespace Kryz.Collections
 {
 	public class PooledList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
-		private static class Pool
-		{
-			private static readonly PooledList<PooledList<T>> pool = new();
-
-			public static PooledList<T> Rent(int capacity = 0, ArrayPool<T>? arrayPool = null)
-			{
-				lock (pool)
-				{
-					if (pool.count > 0)
-					{
-						PooledList<T> list = pool[pool.count - 1];
-						pool.RemoveAt(pool.count - 1);
-						Init(list, capacity, arrayPool);
-						return list;
-					}
-				}
-				return new PooledList<T>(capacity, arrayPool, isPooled: true);
-			}
-
-			public static void Return(PooledList<T> list)
-			{
-				lock (pool)
-				{
-					pool.Add(list);
-				}
-			}
-
-			private static void Init(PooledList<T> list, int capacity, ArrayPool<T>? pool)
-			{
-				list.arrayPool = pool ?? ArrayPool<T>.Shared;
-				list.array = list.arrayPool.Rent(Math.Max(capacity, 16));
-				list.count = 0;
-				list.version = 0;
-			}
-		}
-
 		private int version;
 		private int count;
 		private T[] array;
@@ -151,6 +115,77 @@ namespace Kryz.Collections
 			{
 				array[count] = default!;
 			}
+		}
+
+		public void RemoveRange(int index, int count)
+		{
+			if (index < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index), "Index must be a positive number");
+			}
+
+			if (count < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(count), "Count must be a positive number");
+			}
+
+			if (this.count - index < count)
+			{
+				throw new ArgumentException("Invalid offset length");
+			}
+
+			if (count > 0)
+			{
+				this.count -= count;
+				if (index < this.count)
+				{
+					Array.Copy(array, index + count, array, index, this.count - index);
+				}
+
+				version++;
+				if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+				{
+					Array.Clear(array, this.count, count);
+				}
+			}
+		}
+
+		public int RemoveAll<TEquatable>(TEquatable match) where TEquatable : IEquatable<T>
+		{
+			int freeIndex = 0; // the first free slot in the array
+
+			// Find the first item which needs to be removed.
+			while (freeIndex < count && !match.Equals(array[freeIndex]))
+			{
+				freeIndex++;
+			}
+			if (freeIndex >= count) return 0;
+
+			int current = freeIndex + 1;
+			while (current < count)
+			{
+				// Find the first item which needs to be kept.
+				while (current < count && match.Equals(array[current]))
+				{
+					current++;
+				}
+
+				if (current < count)
+				{
+					// copy item to the free slot.
+					array[freeIndex++] = array[current++];
+				}
+			}
+
+			if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+			{
+				Array.Clear(array, freeIndex, count - freeIndex); // Clear the elements so that the gc can reclaim the references.
+			}
+
+			int result = count - freeIndex;
+			count = freeIndex;
+			version++;
+			return result;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -261,6 +296,42 @@ namespace Kryz.Collections
 			}
 
 			public readonly void Dispose() { }
+		}
+
+		private static class Pool
+		{
+			private static readonly PooledList<PooledList<T>> pool = new();
+
+			public static PooledList<T> Rent(int capacity = 0, ArrayPool<T>? arrayPool = null)
+			{
+				lock (pool)
+				{
+					if (pool.count > 0)
+					{
+						PooledList<T> list = pool[pool.count - 1];
+						pool.RemoveAt(pool.count - 1);
+						Init(list, capacity, arrayPool);
+						return list;
+					}
+				}
+				return new PooledList<T>(capacity, arrayPool, isPooled: true);
+			}
+
+			public static void Return(PooledList<T> list)
+			{
+				lock (pool)
+				{
+					pool.Add(list);
+				}
+			}
+
+			private static void Init(PooledList<T> list, int capacity, ArrayPool<T>? pool)
+			{
+				list.arrayPool = pool ?? ArrayPool<T>.Shared;
+				list.array = list.arrayPool.Rent(Math.Max(capacity, 16));
+				list.count = 0;
+				list.version = 0;
+			}
 		}
 	}
 }
