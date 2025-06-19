@@ -1,5 +1,5 @@
-using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Kryz.Collections
 {
@@ -11,15 +11,9 @@ namespace Kryz.Collections
 
 			public static PooledList<T> Rent(int capacity = 0, ArrayPool<T>? arrayPool = null)
 			{
-				lock (pool)
+				if (TryGetFromPool(out PooledList<T>? list))
 				{
-					if (pool.count > 0)
-					{
-						PooledList<T> list = pool[pool.count - 1];
-						pool.RemoveAt(pool.count - 1);
-						Init(list, capacity, arrayPool);
-						return list;
-					}
+					return list.Init(capacity, arrayPool);
 				}
 				return new PooledList<T>(capacity, arrayPool, isPooled: true);
 			}
@@ -32,12 +26,19 @@ namespace Kryz.Collections
 				}
 			}
 
-			private static void Init(PooledList<T> list, int capacity, ArrayPool<T>? pool)
+			private static bool TryGetFromPool([MaybeNullWhen(returnValue: false)] out PooledList<T> list)
 			{
-				list.arrayPool = pool ?? ArrayPool<T>.Shared;
-				list.array = list.arrayPool.Rent(Math.Max(capacity, 16));
-				list.count = 0;
-				list.version = 0;
+				lock (pool)
+				{
+					if (pool.count > 0)
+					{
+						list = pool[pool.count - 1];
+						pool.RemoveAt(pool.count - 1);
+						return true;
+					}
+				}
+				list = null;
+				return false;
 			}
 		}
 	}

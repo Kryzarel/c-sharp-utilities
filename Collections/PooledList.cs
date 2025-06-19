@@ -42,17 +42,29 @@ namespace Kryz.Collections
 			return Pool.Rent(capacity, arrayPool);
 		}
 
-		private PooledList(int capacity, ArrayPool<T>? arrayPool, bool isPooled) : this(capacity, arrayPool)
-		{
-			this.isPooled = isPooled;
-		}
-
 		public PooledList(int capacity = 0, ArrayPool<T>? arrayPool = null)
 		{
 			this.arrayPool = arrayPool ?? ArrayPool<T>.Shared;
 			array = this.arrayPool.Rent(Math.Max(capacity, 16));
 			count = 0;
 			version = 0;
+		}
+
+		private PooledList(int capacity, ArrayPool<T>? arrayPool, bool isPooled) : this(capacity, arrayPool)
+		{
+			this.isPooled = isPooled;
+		}
+
+		/// <summary>
+		/// Used instead of constructor when renting from the static pool. Make sure to keep it equal to constructor, if that ever changes.
+		/// </summary>
+		private PooledList<T> Init(int capacity = 0, ArrayPool<T>? arrayPool = null)
+		{
+			this.arrayPool = arrayPool ?? ArrayPool<T>.Shared;
+			array = this.arrayPool.Rent(Math.Max(capacity, 16));
+			count = 0;
+			version = 0;
+			return this;
 		}
 
 		~PooledList()
