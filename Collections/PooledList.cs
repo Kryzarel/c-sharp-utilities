@@ -200,6 +200,14 @@ namespace Kryz.Collections
 			return result;
 		}
 
+		public T[] ToArray()
+		{
+			if (count <= 0) return Array.Empty<T>();
+			T[] result = new T[count];
+			Array.Copy(array, 0, result, 0, count);
+			return result;
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item) => Array.IndexOf(array, item, 0, count);
 

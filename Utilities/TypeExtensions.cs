@@ -27,7 +27,7 @@ namespace Kryz.Utils
 		/// C# doesn't give you base class private members even if you use BindingFlags.NonPublic.
 		/// We have to manually search the base class(es) to find them.
 		/// </summary>
-		public static void GetAllFields(this Type type, BindingFlags bindingFlags, List<FieldInfo> fieldInfos)
+		public static void GetAllFields(this Type type, BindingFlags bindingFlags, IList<FieldInfo> fieldInfos)
 		{
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
@@ -42,7 +42,7 @@ namespace Kryz.Utils
 		/// C# doesn't give you base class private members even if you use BindingFlags.NonPublic.
 		/// We have to manually search the base class(es) to find them.
 		/// </summary>
-		public static void GetAllProperties(this Type type, BindingFlags bindingFlags, List<PropertyInfo> propertyInfos)
+		public static void GetAllProperties(this Type type, BindingFlags bindingFlags, IList<PropertyInfo> propertyInfos)
 		{
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
@@ -63,7 +63,7 @@ namespace Kryz.Utils
 		/// C# doesn't give you base class private members even if you use BindingFlags.NonPublic.
 		/// We have to manually search the base class(es) to find them.
 		/// </summary>
-		public static void GetAllMethods(this Type type, BindingFlags bindingFlags, List<MethodInfo> methodInfos)
+		public static void GetAllMethods(this Type type, BindingFlags bindingFlags, IList<MethodInfo> methodInfos)
 		{
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
@@ -84,7 +84,7 @@ namespace Kryz.Utils
 		/// C# doesn't give you base class private members even if you use BindingFlags.NonPublic.
 		/// We have to manually search the base class(es) to find them.
 		/// </summary>
-		public static void GetAllFieldsWithAttribute(this Type type, BindingFlags bindingFlags, Type attributeType, List<FieldInfo> fieldInfos)
+		public static void GetAllFieldsWithAttribute(this Type type, BindingFlags bindingFlags, Type attributeType, IList<FieldInfo> fieldInfos)
 		{
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
@@ -105,7 +105,7 @@ namespace Kryz.Utils
 		/// C# doesn't give you base class private members even if you use BindingFlags.NonPublic.
 		/// We have to manually search the base class(es) to find them.
 		/// </summary>
-		public static void GetAllPropertiesWithAttribute(this Type type, BindingFlags bindingFlags, Type attributeType, List<PropertyInfo> propertyInfos)
+		public static void GetAllPropertiesWithAttribute(this Type type, BindingFlags bindingFlags, Type attributeType, IList<PropertyInfo> propertyInfos)
 		{
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
@@ -126,7 +126,7 @@ namespace Kryz.Utils
 		/// C# doesn't give you base class private members even if you use BindingFlags.NonPublic.
 		/// We have to manually search the base class(es) to find them.
 		/// </summary>
-		public static void GetAllMethodsWithAttribute(this Type type, BindingFlags bindingFlags, Type attributeType, List<MethodInfo> methodInfos)
+		public static void GetAllMethodsWithAttribute(this Type type, BindingFlags bindingFlags, Type attributeType, IList<MethodInfo> methodInfos)
 		{
 			// Use BindingFlags.DeclaredOnly to prevent including duplicate members from base/derived classes
 			bindingFlags |= BindingFlags.DeclaredOnly;
@@ -160,11 +160,12 @@ namespace Kryz.Utils
 			};
 		}
 
-		private static bool IsDuplicate(this MethodInfo method, IReadOnlyList<MethodInfo> infos)
+		private static bool IsDuplicate(this MethodInfo method, IList<MethodInfo> infos)
 		{
 			MethodInfo methodBase = method.GetBaseDefinition();
-			foreach (MethodInfo item in infos)
+			for (int i = 0; i < infos.Count; i++)
 			{
+				MethodInfo item = infos[i];
 				MethodInfo itemBase = item.GetBaseDefinition();
 				if (method == item || method == itemBase || methodBase == itemBase)
 				{
@@ -174,12 +175,13 @@ namespace Kryz.Utils
 			return false;
 		}
 
-		private static bool IsDuplicate(this PropertyInfo property, IReadOnlyList<PropertyInfo> infos)
+		private static bool IsDuplicate(this PropertyInfo property, IList<PropertyInfo> infos)
 		{
 			MethodInfo? propertyGetterBase = property.GetMethod?.GetBaseDefinition();
 			MethodInfo? propertySetterBase = property.SetMethod?.GetBaseDefinition();
-			foreach (PropertyInfo item in infos)
+			for (int i = 0; i < infos.Count; i++)
 			{
+				PropertyInfo item = infos[i];
 				MethodInfo? itemGetterBase = item.GetMethod?.GetBaseDefinition();
 				MethodInfo? itemSetterBase = item.SetMethod?.GetBaseDefinition();
 				if (property == item
