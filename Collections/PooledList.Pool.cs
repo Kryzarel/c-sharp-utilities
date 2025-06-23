@@ -30,10 +30,11 @@ namespace Kryz.Collections
 			{
 				lock (pool)
 				{
-					if (pool.count > 0)
+					int last = pool.count - 1;
+					if (last >= 0)
 					{
-						list = pool[pool.count - 1];
-						pool.RemoveAt(pool.count - 1);
+						list = pool[last];
+						pool.RemoveAt(last);
 						return true;
 					}
 				}

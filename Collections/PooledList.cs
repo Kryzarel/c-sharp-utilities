@@ -249,11 +249,16 @@ namespace Kryz.Collections
 			{
 				Pool.Return(this);
 			}
+
+			GC.SuppressFinalize(this);
 		}
 
 		~PooledList()
 		{
-			Dispose();
+			if (array != null && arrayPool != null)
+			{
+				arrayPool.Return(array);
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
