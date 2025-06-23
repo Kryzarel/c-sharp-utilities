@@ -67,11 +67,6 @@ namespace Kryz.Collections
 			return this;
 		}
 
-		~PooledList()
-		{
-			Dispose();
-		}
-
 		public void Add(T item)
 		{
 			if (count == array.Length)
@@ -99,6 +94,11 @@ namespace Kryz.Collections
 
 		public bool Remove(T item)
 		{
+			if (count == 0)
+			{
+				return false;
+			}
+
 			int index = IndexOf(item);
 			if (index >= 0)
 			{
@@ -208,20 +208,20 @@ namespace Kryz.Collections
 			return result;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item) => Array.IndexOf(array, item, 0, count);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item, int index) => Array.IndexOf(array, item, index, count - index);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Contains(T item) => Array.IndexOf(array, item, 0, count) >= 0;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(this.array, 0, array, arrayIndex, count);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(PooledList<T> list) => Array.Copy(array, 0, list.array, 0, count);
+		public void EnsureCapacity(int capacity)
+		{
+			if (array.Length.TryGetNewCapacity(capacity, out int newCapacity))
+			{
+				T[] oldArray = array;
+				array = arrayPool.Rent(newCapacity);
+				Array.Copy(oldArray, array, count);
+				if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+				{
+					Array.Clear(oldArray, 0, count);
+				}
+				arrayPool.Return(oldArray);
+			}
+		}
 
 		public void Clear()
 		{
@@ -251,20 +251,25 @@ namespace Kryz.Collections
 			}
 		}
 
-		public void EnsureCapacity(int capacity)
+		~PooledList()
 		{
-			if (array.Length.TryGetNewCapacity(capacity, out int newCapacity))
-			{
-				T[] oldArray = array;
-				array = arrayPool.Rent(newCapacity);
-				Array.Copy(oldArray, array, count);
-				if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-				{
-					Array.Clear(oldArray, 0, count);
-				}
-				arrayPool.Return(oldArray);
-			}
+			Dispose();
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(T item) => Array.IndexOf(array, item, 0, count);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(T item, int index) => Array.IndexOf(array, item, index, count - index);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Contains(T item) => Array.IndexOf(array, item, 0, count) >= 0;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(this.array, 0, array, arrayIndex, count);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(PooledList<T> list) => Array.Copy(array, 0, list.array, 0, count);
 
 		public Enumerator GetEnumerator() => new(this);
 
