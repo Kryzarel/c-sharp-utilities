@@ -19,10 +19,16 @@ namespace Kryz.Utils
 			((IList<T>)list).AddRangeNonAlloc(span);
 		}
 
-		public static void AddRangeNonAlloc<T, TAdd>(this List<T> list, TAdd toAdd) where TAdd : IReadOnlyList<T>
+		public static void AddRangeNonAlloc<T, TAdd>(this List<T> list, IList<T> toAdd)
 		{
 			list.EnsureCapacity(list.Count + toAdd.Count);
-			((IList<T>)list).AddRangeNonAlloc(toAdd);
+			list.AddRangeNonAlloc(toAdd);
+		}
+
+		public static void AddRangeNonAlloc<T, TAdd>(this List<T> list, IReadOnlyList<T> toAdd)
+		{
+			list.EnsureCapacity(list.Count + toAdd.Count);
+			list.AddRangeNonAlloc(toAdd);
 		}
 	}
 }

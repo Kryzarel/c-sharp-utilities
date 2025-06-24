@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Kryz.Collections
+namespace Kryz.Utils
 {
 	public partial class PooledList<T>
 	{

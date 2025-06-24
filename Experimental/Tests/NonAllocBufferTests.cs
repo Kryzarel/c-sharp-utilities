@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Random = UnityEngine.Random;
 
-namespace Kryz.Collections.Experimental.Tests.Editor
+namespace Kryz.Utils.Experimental.Tests.Editor
 {
 	public class NonAllocBufferTests
 	{

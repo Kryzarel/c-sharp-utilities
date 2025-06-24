@@ -1,7 +1,7 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Kryz.Collections
+namespace Kryz.Utils
 {
 	public partial class PooledList<T>
 	{

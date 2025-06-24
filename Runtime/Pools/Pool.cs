@@ -1,7 +1,7 @@
 using System;
 using System.Buffers;
 
-namespace Kryz.Pools
+namespace Kryz.Utils
 {
 	public sealed class Pool<T> : BasePool<T>
 	{

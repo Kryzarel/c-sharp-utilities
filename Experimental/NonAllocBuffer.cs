@@ -1,9 +1,8 @@
 using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
-using Kryz.Utils;
 
-namespace Kryz.Collections.Experimental
+namespace Kryz.Utils.Experimental
 {
 	public ref struct NonAllocBuffer<T>
 	{

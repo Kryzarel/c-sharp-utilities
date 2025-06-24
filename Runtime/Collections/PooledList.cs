@@ -3,9 +3,8 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Kryz.Utils;
 
-namespace Kryz.Collections
+namespace Kryz.Utils
 {
 	public partial class PooledList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{

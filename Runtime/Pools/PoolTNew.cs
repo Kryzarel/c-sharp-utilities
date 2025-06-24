@@ -1,4 +1,4 @@
-namespace Kryz.Pools
+namespace Kryz.Utils
 {
 	public class PoolTNew<T> : BasePool<T> where T : new()
 	{

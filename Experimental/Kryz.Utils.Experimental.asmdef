@@ -1,6 +1,6 @@
 {
-    "name": "Kryz.Pools",
-    "rootNamespace": "Kryz.Pools",
+    "name": "Kryz.Utils.Experimental",
+    "rootNamespace": "Kryz.Utils.Experimental",
     "references": [
         "GUID:6562b918f46669b4ba9dd7649c5ee487"
     ],

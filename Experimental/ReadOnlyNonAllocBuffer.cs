@@ -2,7 +2,7 @@ using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
 
-namespace Kryz.Collections.Experimental
+namespace Kryz.Utils.Experimental
 {
 	public ref struct ReadOnlyNonAllocBuffer<T>
 	{
