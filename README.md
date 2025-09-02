@@ -1,6 +1,6 @@
 # C# Utilities
 
-A collection of utilities for C# and Unity. This package contains pure C# code only. Even though it is formatted as Unity package, it *should* be usable in any C# project. An additional package will be released *soon(tm)* which contains Unity-specific utilities.
+A collection of utilities for C# and Unity. This package contains pure C# code only. Even though it is formatted as a Unity package, it *should* be usable in any C# project. An additional package will be released *soon(tm)* which contains Unity-specific utilities.
 
 ## Installation
 
@@ -86,14 +86,17 @@ int[] array = ExactSizeArrayPool<int>.Shared.Rent(size); // Returns an array of 
 
 Reimplementation of `List<T>` that uses `ArrayPool<T>` for its internal arrays, rather than allocating new ones. The implementation was mostly copied directly from [Microsoft's official `List<T>` source code](https://source.dot.net/#System.Private.CoreLib/src/libraries/System.Private.CoreLib/src/System/Collections/Generic/List.cs).
 ```csharp
-PooledList<int> list = new PooledList<T>(size); // Returns a list with capacity larger than or equal to `size`
+// Returns a list with capacity larger than or equal to `size`
+PooledList<int> list = new PooledList<T>(size);
 
-list.AddRange(collection); // When resizing the list, new arrays will be rented from `ArrayPool<T>` rather than allocated using new T[];
+// When resizing the list, new arrays will be rented from `ArrayPool<T>` rather than allocated using new T[];
+list.AddRange(collection);
 ```
 
 `PooledList<T>` objects can also themselves be pooled for further reduced memory pressure.
 ```csharp
-PooledList<int> list = PooledList<T>().Rent(size); // Returns a list with capacity larger than or equal to `size`
+// Returns a list with capacity larger than or equal to `size`
+PooledList<int> list = PooledList<T>().Rent(size);
 ```
 
 ## Author
