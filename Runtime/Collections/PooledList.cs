@@ -78,29 +78,34 @@ namespace Kryz.Utils
 
 		public void AddRange(IEnumerable<T> enumerable)
 		{
-			if (enumerable is ICollection<T> collection)
+			if (enumerable == null)
 			{
-				int addCount = collection.Count;
-				if (addCount > 0)
-				{
-					int newCount = count + addCount;
-					if (array.Length < newCount)
-					{
-						EnsureCapacity(newCount);
-					}
+				throw new ArgumentNullException(nameof(enumerable));
+			}
 
-					collection.CopyTo(array, count);
-					count = newCount;
-					version++;
-				}
-			}
-			else
-			{
-				foreach (T item in enumerable)
+			if (enumerable is ICollection<T> collection)
 				{
-					Add(item);
+					int addCount = collection.Count;
+					if (addCount > 0)
+					{
+						int newCount = count + addCount;
+						if (array.Length < newCount)
+						{
+							EnsureCapacity(newCount);
+						}
+
+						collection.CopyTo(array, count);
+						count = newCount;
+						version++;
+					}
 				}
-			}
+				else
+				{
+					foreach (T item in enumerable)
+					{
+						Add(item);
+					}
+				}
 		}
 
 		public void Insert(int index, T item)
