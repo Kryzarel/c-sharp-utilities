@@ -38,9 +38,10 @@ namespace Kryz.Utils
 
 		public static void AddRangeNonAlloc<T>(this IList<T> list, ReadOnlySpan<T> toAdd)
 		{
-			foreach (T value in toAdd)
+			int count = toAdd.Length;
+			for (int i = 0; i < count; i++)
 			{
-				list.Add(value);
+				list.Add(toAdd[i]);
 			}
 		}
 
