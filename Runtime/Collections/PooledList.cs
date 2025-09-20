@@ -84,28 +84,28 @@ namespace Kryz.Utils
 			}
 
 			if (enumerable is ICollection<T> collection)
+			{
+				int addCount = collection.Count;
+				if (addCount > 0)
 				{
-					int addCount = collection.Count;
-					if (addCount > 0)
+					int newCount = count + addCount;
+					if (array.Length < newCount)
 					{
-						int newCount = count + addCount;
-						if (array.Length < newCount)
-						{
-							EnsureCapacity(newCount);
-						}
+						EnsureCapacity(newCount);
+					}
 
-						collection.CopyTo(array, count);
-						count = newCount;
-						version++;
-					}
+					collection.CopyTo(array, count);
+					count = newCount;
+					version++;
 				}
-				else
+			}
+			else
+			{
+				foreach (T item in enumerable)
 				{
-					foreach (T item in enumerable)
-					{
-						Add(item);
-					}
+					Add(item);
 				}
+			}
 		}
 
 		public void Insert(int index, T item)
