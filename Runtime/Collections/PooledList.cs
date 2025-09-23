@@ -85,15 +85,13 @@ namespace Kryz.Utils
 
 			if (enumerable is ICollection<T> collection)
 			{
-				int addCount = collection.Count;
-				if (addCount > 0)
+				int newCount = count + collection.Count;
+				if (newCount > count)
 				{
-					int newCount = count + addCount;
-					if (array.Length < newCount)
+					if (newCount > array.Length)
 					{
 						EnsureCapacity(newCount);
 					}
-
 					collection.CopyTo(array, count);
 					count = newCount;
 					version++;
