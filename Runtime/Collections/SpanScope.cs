@@ -43,6 +43,6 @@ namespace Kryz.Utils
 		}
 
 		public static implicit operator SpanScope<T>(Span<T> span) => new(span);
-		public static implicit operator Span<T>(SpanScope<T> arrayPoolScope) => arrayPoolScope.Span;
+		public static implicit operator Span<T>(SpanScope<T> scope) => scope.Span;
 	}
 }
