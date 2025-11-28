@@ -14,7 +14,10 @@ namespace Kryz.Utils
 	/// </summary>
 	public readonly ref struct SpanScope<T>
 	{
+		public ref T this[int index] => ref Span[index];
+
 		public readonly Span<T> Span;
+		public readonly int Length;
 
 		private readonly T[]? array;
 		private readonly ArrayPool<T>? pool;
@@ -24,6 +27,7 @@ namespace Kryz.Utils
 			pool = arrayPool ?? ArrayPool<T>.Shared;
 			array = pool.Rent(size);
 			Span = array[..size];
+			Length = Span.Length;
 		}
 
 		private SpanScope(Span<T> span)
@@ -31,6 +35,7 @@ namespace Kryz.Utils
 			Span = span;
 			array = null;
 			pool = null;
+			Length = 0;
 		}
 
 		public void Dispose()
