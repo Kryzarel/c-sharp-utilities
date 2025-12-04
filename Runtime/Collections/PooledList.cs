@@ -244,11 +244,7 @@ namespace Kryz.Utils
 				T[] oldArray = array;
 				array = arrayPool.Rent(newCapacity);
 				Array.Copy(oldArray, array, count);
-				if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-				{
-					Array.Clear(oldArray, 0, count);
-				}
-				arrayPool.Return(oldArray);
+				arrayPool.Return(oldArray, clearArray: true);
 			}
 		}
 
@@ -269,24 +265,16 @@ namespace Kryz.Utils
 				return;
 			}
 
-			Clear();
-			arrayPool.Return(array);
+			count = 0;
+			version++;
+
+			arrayPool.Return(array, clearArray: true);
 			array = null!;
 			arrayPool = null!;
 
 			if (isPooled)
 			{
 				Pool.Return(this);
-			}
-
-			GC.SuppressFinalize(this);
-		}
-
-		~PooledList()
-		{
-			if (array != null && arrayPool != null)
-			{
-				arrayPool.Return(array);
 			}
 		}
 
