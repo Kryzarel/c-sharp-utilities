@@ -19,10 +19,10 @@ namespace Kryz.Utils
 				int j = Array.BinarySearch(array, start, i - start, x, comparer);
 				if (j < 0) j = ~j;
 
-				// Shifting array to one location right
+				// Shift array one spot to the right
 				Array.Copy(array, j, array, j + 1, i - j);
 
-				// Placing element at its correct location
+				// Place element at its correct location
 				array[j] = x;
 			}
 		}
