@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Kryz.Utils
@@ -12,32 +13,17 @@ namespace Kryz.Utils
 		{
 			for (int i = start + sorted; i < start + count; i++)
 			{
-				int min = start;
-				int max = i;
-				T pivot = array[max];
+				T x = array[i];
 
-				// Binary search for insertion point
-				while (min < max)
-				{
-					int mid = min + ((max - min) >> 1);
+				// Find location to insert using binary search
+				int j = Array.BinarySearch(array, start, i - start, x, comparer);
+				if (j < 0) j = ~j;
 
-					if (comparer.Compare(pivot, array[mid]) < 0)
-					{
-						max = mid;
-					}
-					else
-					{
-						min = mid + 1;
-					}
-				}
+				// Shifting array to one location right
+				Array.Copy(array, j, array, j + 1, i - j);
 
-				// shift right to make room
-				for (int j = i; j > min; j--)
-				{
-					array[j] = array[j - 1];
-				}
-
-				array[min] = pivot;
+				// Placing element at its correct location
+				array[j] = x;
 			}
 		}
 	}

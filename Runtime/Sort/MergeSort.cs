@@ -13,21 +13,20 @@ namespace Kryz.Utils
 		public static void Sort<T>(T[] array, IComparer<T> comparer) => Sort(array, 0, array.Length, comparer);
 		public static void Sort<T>(T[] array, int start, int count) => Sort(array, start, count, Comparer<T>.Default);
 
-		public static void Sort<T>(T[] array, int start, int count, IComparer<T> comparer)
-		{
-			int left = start;
-			int right = count - 1;
+		public static void Sort<T>(T[] array, int start, int count, IComparer<T> comparer) => SortRecursive(array, start, start + count - 1, comparer);
 
+		public static void SortRecursive<T>(T[] array, int left, int right, IComparer<T> comparer)
+		{
 			if (left < right)
 			{
 				int middle = left + (right - left) / 2;
-				Sort(array, left, middle + 1, comparer);
-				Sort(array, middle + 1, right + 1, comparer);
+				SortRecursive(array, left, middle, comparer);
+				SortRecursive(array, middle + 1, right, comparer);
 				Merge(array, left, middle, right, comparer);
 			}
 		}
 
-		private static void Merge<T>(T[] array, int left, int middle, int right, IComparer<T> comparer)
+		public static void Merge<T>(T[] array, int left, int middle, int right, IComparer<T> comparer)
 		{
 			int leftArrayLength = middle - left + 1;
 			int rightArrayLength = right - middle;

@@ -10,7 +10,7 @@ namespace Kryz.Utils
 
 		public static void Sort<T>(T[] array, int start, int count, IComparer<T> comparer)
 		{
-			for (int i = start + 1; i < count; i++)
+			for (int i = start + 1; i < start + count; i++)
 			{
 				T x = array[i];
 
