@@ -2,9 +2,12 @@ using System.Collections.Generic;
 
 namespace Kryz.Utils
 {
-	public static class CombinedSort
+	/// <summary>
+	/// A sorting algorithm implementation that uses Merge Sort on large data sets (larger than '<see cref="MergeThreshold"/>') and switches to Binary Sort on small data sets.
+	/// </summary>
+	public static class MergeBinarySort
 	{
-		public const int Threshold = 64;
+		public const int MergeThreshold = 64;
 
 		public static void Sort<T>(T[] array) => Sort(array, 0, array.Length, Comparer<T>.Default);
 		public static void Sort<T>(T[] array, IComparer<T> comparer) => Sort(array, 0, array.Length, comparer);
@@ -16,7 +19,7 @@ namespace Kryz.Utils
 		{
 			int count = right - left + 1;
 
-			if (count < Threshold)
+			if (count < MergeThreshold)
 			{
 				BinarySort.Sort(array, left, count, comparer);
 			}
