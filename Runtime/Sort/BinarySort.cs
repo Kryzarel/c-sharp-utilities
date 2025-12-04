@@ -16,7 +16,7 @@ namespace Kryz.Utils
 				int max = i;
 				T pivot = array[max];
 
-				// binary search for insertion point
+				// Binary search for insertion point
 				while (min < max)
 				{
 					int mid = min + ((max - min) >> 1);
@@ -32,9 +32,9 @@ namespace Kryz.Utils
 				}
 
 				// shift right to make room
-				for (int p = i; p > min; p--)
+				for (int j = i; j > min; j--)
 				{
-					array[p] = array[p - 1];
+					array[j] = array[j - 1];
 				}
 
 				array[min] = pivot;
