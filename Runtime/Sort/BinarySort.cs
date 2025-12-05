@@ -23,7 +23,7 @@ namespace Kryz.Utils
 				int j = Array.BinarySearch(data, index, i - index, x, comparer);
 				if (j < 0) j = ~j;
 
-				// Shift data one spot to the right
+				// Shift data one position to the right
 				Array.Copy(data, j, data, j + 1, i - j);
 
 				// Place element at its correct location
@@ -45,7 +45,7 @@ namespace Kryz.Utils
 				int j = BinarySearch.Search(data, index, i - index, x, comparer);
 				if (j < 0) j = ~j;
 
-				// Shift data one spot to the right
+				// Shift data one position to the right
 				for (int k = i; k > j; k--)
 				{
 					data[k] = data[k - 1];
