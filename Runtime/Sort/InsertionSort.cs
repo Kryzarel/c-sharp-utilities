@@ -19,7 +19,7 @@ namespace Kryz.Utils
 				T x = data[i];
 
 				int j = i;
-				for (; j > 0 && comparer.Compare(data[j - 1], x) > 0; j--)
+				for (; j > index && comparer.Compare(data[j - 1], x) > 0; j--)
 				{
 					data[j] = data[j - 1];
 				}
@@ -39,7 +39,7 @@ namespace Kryz.Utils
 				T x = data[i];
 
 				int j = i;
-				for (; j > 0 && comparer.Compare(data[j - 1], x) > 0; j--)
+				for (; j > index && comparer.Compare(data[j - 1], x) > 0; j--)
 				{
 					data[j] = data[j - 1];
 				}
