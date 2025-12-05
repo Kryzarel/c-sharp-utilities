@@ -1,14 +1,21 @@
+using System;
 using System.Collections.Generic;
 
 namespace Kryz.Utils
 {
 	public static class BinarySearch
 	{
+		// Array variants for convenience, even though they just call Array.BinarySearch directly.
+		public static int Search<T>(T[] data, T value) => Array.BinarySearch(data, 0, data.Length, value, Comparer<T>.Default);
+		public static int Search<T>(T[] data, int index, int length, T value) => Array.BinarySearch(data, index, length, value, Comparer<T>.Default);
+		public static int Search<T>(T[] data, T value, IComparer<T> comparer) => Array.BinarySearch(data, 0, data.Length, value, comparer);
+		public static int Search<T>(T[] data, int index, int length, T value, IComparer<T> comparer) => Array.BinarySearch(data, index, length, value, comparer);
+
 		public static int Search<T>(IList<T> data, T value) => Search(data, 0, data.Count, value, Comparer<T>.Default);
 		public static int Search<T>(IList<T> data, int index, int length, T value) => Search(data, index, length, value, Comparer<T>.Default);
-		public static int Search<T, TComp>(IList<T> data, T value, TComp comparer) where TComp : IComparer<T> => Search(data, 0, data.Count, value, comparer);
+		public static int Search<T>(IList<T> data, T value, IComparer<T> comparer) => Search(data, 0, data.Count, value, comparer);
 
-		public static int Search<T, TComp>(IList<T> data, int index, int length, T value, TComp comparer) where TComp : IComparer<T>
+		public static int Search<T>(IList<T> data, int index, int length, T value, IComparer<T> comparer)
 		{
 			int min = index;
 			int max = index + length - 1;
@@ -30,9 +37,9 @@ namespace Kryz.Utils
 
 		public static int Search<T>(IReadOnlyList<T> data, T value) => Search(data, 0, data.Count, value, Comparer<T>.Default);
 		public static int Search<T>(IReadOnlyList<T> data, int index, int length, T value) => Search(data, index, length, value, Comparer<T>.Default);
-		public static int Search<T, TComp>(IReadOnlyList<T> data, T value, TComp comparer) where TComp : IComparer<T> => Search(data, 0, data.Count, value, comparer);
+		public static int Search<T>(IReadOnlyList<T> data, T value, IComparer<T> comparer) => Search(data, 0, data.Count, value, comparer);
 
-		public static int Search<T, TComp>(IReadOnlyList<T> data, int index, int length, T value, TComp comparer) where TComp : IComparer<T>
+		public static int Search<T>(IReadOnlyList<T> data, int index, int length, T value, IComparer<T> comparer)
 		{
 			int min = index;
 			int max = index + length - 1;
@@ -50,6 +57,76 @@ namespace Kryz.Utils
 					max = mid - 1;
 			}
 			return ~min;
+		}
+
+		// -------------------------------------
+		// Required for BinarySort to be stable
+		// -------------------------------------
+
+		public static int Rightmost<T>(T[] data, T value) => Rightmost(data, 0, data.Length, value, Comparer<T>.Default);
+		public static int Rightmost<T>(T[] data, int index, int length, T value) => Rightmost(data, index, length, value, Comparer<T>.Default);
+		public static int Rightmost<T>(T[] data, T value, IComparer<T> comparer) => Rightmost(data, 0, data.Length, value, comparer);
+
+		public static int Rightmost<T>(T[] data, int index, int length, T value, IComparer<T> comparer)
+		{
+			int min = index;
+			int max = index + length - 1;
+
+			while (min <= max)
+			{
+				int mid = min + ((max - min) >> 1);
+
+				// Doesn't return early for '== 0' case to preserve stability
+				if (comparer.Compare(data[mid], value) <= 0)
+					min = mid + 1;
+				else
+					max = mid - 1;
+			}
+			return min;
+		}
+
+		public static int Rightmost<T>(IList<T> data, T value) => Rightmost(data, 0, data.Count, value, Comparer<T>.Default);
+		public static int Rightmost<T>(IList<T> data, int index, int length, T value) => Rightmost(data, index, length, value, Comparer<T>.Default);
+		public static int Rightmost<T>(IList<T> data, T value, IComparer<T> comparer) => Rightmost(data, 0, data.Count, value, comparer);
+
+		public static int Rightmost<T>(IList<T> data, int index, int length, T value, IComparer<T> comparer)
+		{
+			int min = index;
+			int max = index + length - 1;
+
+			while (min <= max)
+			{
+				int mid = min + ((max - min) >> 1);
+
+				// Doesn't return early for '== 0' case to preserve stability
+				if (comparer.Compare(data[mid], value) <= 0)
+					min = mid + 1;
+				else
+					max = mid - 1;
+			}
+			return min;
+		}
+
+		public static int Rightmost<T>(IReadOnlyList<T> data, T value) => Rightmost(data, 0, data.Count, value, Comparer<T>.Default);
+		public static int Rightmost<T>(IReadOnlyList<T> data, int index, int length, T value) => Rightmost(data, index, length, value, Comparer<T>.Default);
+		public static int Rightmost<T>(IReadOnlyList<T> data, T value, IComparer<T> comparer) => Rightmost(data, 0, data.Count, value, comparer);
+
+		public static int Rightmost<T>(IReadOnlyList<T> data, int index, int length, T value, IComparer<T> comparer)
+		{
+			int min = index;
+			int max = index + length - 1;
+
+			while (min <= max)
+			{
+				int mid = min + ((max - min) >> 1);
+
+				// Doesn't return early for '== 0' case to preserve stability
+				if (comparer.Compare(data[mid], value) <= 0)
+					min = mid + 1;
+				else
+					max = mid - 1;
+			}
+			return min;
 		}
 	}
 }
