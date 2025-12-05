@@ -3,27 +3,55 @@ using System.Collections.Generic;
 
 namespace Kryz.Utils
 {
+	/// <summary>
+	/// Binary Insertion Sort implementation in C#. Generally faster than Insertion Sort while still being stable.
+	/// </summary>
 	public static class BinarySort
 	{
-		public static void Sort<T>(T[] array) => Sort(array, 0, array.Length, Comparer<T>.Default);
-		public static void Sort<T>(T[] array, IComparer<T> comparer) => Sort(array, 0, array.Length, comparer);
-		public static void Sort<T>(T[] array, int start, int count) => Sort(array, start, count, Comparer<T>.Default);
+		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
+		public static void Sort<T>(T[] data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
+		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data, 0, data.Length, comparer);
 
-		public static void Sort<T>(T[] array, int start, int count, IComparer<T> comparer, int sorted = 1)
+		public static void Sort<T>(T[] data, int index, int length, IComparer<T> comparer, int sorted = 1)
 		{
-			for (int i = start + sorted; i < start + count; i++)
+			for (int i = index + sorted; i < index + length; i++)
 			{
-				T x = array[i];
+				T x = data[i];
 
 				// Find location to insert using binary search
-				int j = Array.BinarySearch(array, start, i - start, x, comparer);
+				int j = Array.BinarySearch(data, index, i - index, x, comparer);
 				if (j < 0) j = ~j;
 
-				// Shift array one spot to the right
-				Array.Copy(array, j, array, j + 1, i - j);
+				// Shift data one spot to the right
+				Array.Copy(data, j, data, j + 1, i - j);
 
 				// Place element at its correct location
-				array[j] = x;
+				data[j] = x;
+			}
+		}
+
+		public static void Sort<T>(IList<T> data) => Sort(data, 0, data.Count, Comparer<T>.Default);
+		public static void Sort<T>(IList<T> data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
+		public static void Sort<T>(IList<T> data, IComparer<T> comparer) => Sort(data, 0, data.Count, comparer);
+
+		public static void Sort<T>(IList<T> data, int index, int length, IComparer<T> comparer, int sorted = 1)
+		{
+			for (int i = index + sorted; i < index + length; i++)
+			{
+				T x = data[i];
+
+				// Find location to insert using binary search
+				int j = BinarySearch.Search(data, index, i - index, x, comparer);
+				if (j < 0) j = ~j;
+
+				// Shift data one spot to the right
+				for (int k = i; k > j; k--)
+				{
+					data[k] = data[k - 1];
+				}
+
+				// Place element at its correct location
+				data[j] = x;
 			}
 		}
 	}
