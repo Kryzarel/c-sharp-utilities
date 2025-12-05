@@ -5,7 +5,7 @@ namespace Kryz.Utils
 {
 	/// <summary>
 	/// Binary Insertion Sort in C#. Generally faster than traditional Insertion Sort, especially for small data sets.
-	/// <para>This sorting algorithm is stable.</para>
+	/// <para>This sorting algorithm is stable. As long as we perform a rightmost binary search.</para>
 	/// </summary>
 	public static class BinarySort
 	{
@@ -20,7 +20,7 @@ namespace Kryz.Utils
 				T x = data[i];
 
 				// Find location to insert using binary search
-				int j = Array.BinarySearch(data, index, i - index, x, comparer);
+				int j = BinarySearch.Rightmost(data, index, i - index, x, comparer);
 				if (j < 0) j = ~j;
 
 				// Shift data one position to the right
@@ -42,7 +42,7 @@ namespace Kryz.Utils
 				T x = data[i];
 
 				// Find location to insert using binary search
-				int j = BinarySearch.Search(data, index, i - index, x, comparer);
+				int j = BinarySearch.Rightmost(data, index, i - index, x, comparer);
 				if (j < 0) j = ~j;
 
 				// Shift data one position to the right
