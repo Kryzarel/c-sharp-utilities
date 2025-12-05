@@ -3,6 +3,7 @@ using System.Collections.Generic;
 namespace Kryz.Utils
 {
 	/// <summary>
+	/// Implementation of Insertion Sort in C#. Fast for small data sets, although <see cref="BinarySort"/> is usually faster.
 	/// <para>This sorting algorithm is stable.</para>
 	/// </summary>
 	public static class InsertionSort

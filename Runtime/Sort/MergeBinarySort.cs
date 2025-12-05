@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Kryz.Utils
 {
 	/// <summary>
-	/// A sorting algorithm implementation that uses Merge Sort on large data sets (larger than '<see cref="MergeThreshold"/>') and switches to Binary Sort on small data sets.
+	/// Hybrid sorting algorithm that uses <see cref="MergeSort"/> and switches to <see cref="BinarySort"/> on small data sets.
 	/// <para>This sorting algorithm is stable.</para>
 	/// </summary>
 	public static class MergeBinarySort

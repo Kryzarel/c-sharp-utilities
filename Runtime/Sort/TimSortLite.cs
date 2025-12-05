@@ -4,13 +4,11 @@ using System.Collections.Generic;
 namespace Kryz.Utils
 {
 	/// <summary>
-	/// Using some of the concepts of TimSort, we achieve a more optimized version of <see cref="MergeBinarySort"/> while still not implementing the full 600+ lines of TimSort in its entirety.
+	/// Using some concepts from TimSort, we get a (slightly) more optimized version of <see cref="MergeBinarySort"/> while avoiding the complexity of implementing TimSort's full 600+ lines.
 	/// <para>This sorting algorithm is stable.</para>
 	/// </summary>
 	public static class TimSortLite
 	{
-		public const int MinRun = 64;
-
 		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data, 0, data.Length, comparer);
@@ -18,16 +16,17 @@ namespace Kryz.Utils
 		public static void Sort<T>(T[] data, int index, int length, IComparer<T> comparer)
 		{
 			int end = index + length;
+			int minRun = ComputeMinRun(length);
 
 			// Sort small runs using Binary Insertion Sort
-			for (int left = index; left < end; left += MinRun)
+			for (int left = index; left < end; left += minRun)
 			{
-				int len = Math.Min(MinRun, end - left);
+				int len = Math.Min(minRun, end - left);
 				BinarySort.Sort(data, left, len, comparer);
 			}
 
-			// Merge runs in powers of two: MinRun -> 2*MinRun -> 4*MinRun -> ...
-			for (int size = MinRun; size < length; size *= 2)
+			// Merge runs in powers of two: minRun -> 2*minRun -> 4*minRun -> ...
+			for (int size = minRun; size < length; size *= 2)
 			{
 				for (int left = index; left + size < end; left += 2 * size)
 				{
@@ -36,6 +35,46 @@ namespace Kryz.Utils
 					MergeSort.Merge(data, left, mid, right, comparer);
 				}
 			}
+		}
+
+		public static void Sort<T>(IList<T> data) => Sort(data, 0, data.Count, Comparer<T>.Default);
+		public static void Sort<T>(IList<T> data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
+		public static void Sort<T>(IList<T> data, IComparer<T> comparer) => Sort(data, 0, data.Count, comparer);
+
+		public static void Sort<T>(IList<T> data, int index, int length, IComparer<T> comparer)
+		{
+			int end = index + length;
+			int minRun = ComputeMinRun(length);
+
+			// Sort small runs using Binary Insertion Sort
+			for (int left = index; left < end; left += minRun)
+			{
+				int len = Math.Min(minRun, end - left);
+				BinarySort.Sort(data, left, len, comparer);
+			}
+
+			// Merge runs in powers of two: minRun -> 2*minRun -> 4*minRun -> ...
+			for (int size = minRun; size < length; size *= 2)
+			{
+				for (int left = index; left + size < end; left += 2 * size)
+				{
+					int mid = left + size - 1;
+					int right = Math.Min(left + 2 * size - 1, end - 1);
+					MergeSort.Merge(data, left, mid, right, comparer);
+				}
+			}
+		}
+
+		public static int ComputeMinRun(int n)
+		{
+			// TimSort's minrun calculation. Returns a value between 32 and 64.
+			int r = 0;
+			while (n >= 64)
+			{
+				r |= n & 1;
+				n >>= 1;
+			}
+			return n + r;
 		}
 	}
 }
