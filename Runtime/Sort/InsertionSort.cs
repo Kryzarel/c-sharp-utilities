@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace Kryz.Utils
 {
+	/// <summary>
+	/// <para>This sorting algorithm is stable.</para>
+	/// </summary>
 	public static class InsertionSort
 	{
 		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);

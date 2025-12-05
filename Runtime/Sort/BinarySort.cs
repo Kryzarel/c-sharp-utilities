@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace Kryz.Utils
 {
 	/// <summary>
-	/// Binary Insertion Sort implementation in C#. Generally faster than Insertion Sort while still being stable.
+	/// Binary Insertion Sort implementation in C#. Generally faster than Insertion Sort.
+	/// <para>This sorting algorithm is stable.</para>
 	/// </summary>
 	public static class BinarySort
 	{

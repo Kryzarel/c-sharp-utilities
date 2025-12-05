@@ -6,6 +6,7 @@ namespace Kryz.Utils
 {
 	/// <summary>
 	/// Implementation of Merge Sort in C# using ArrayPool for the intermediate arrays to reduce heap allocations.
+	/// <para>This sorting algorithm is stable.</para>
 	/// </summary>
 	public static class MergeSort
 	{
