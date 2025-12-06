@@ -5,12 +5,6 @@ namespace Kryz.Utils
 {
 	public static class BinarySearch
 	{
-		// Array variants for convenience, even though they just call Array.BinarySearch directly.
-		public static int Search<T>(T[] data, T value) => Array.BinarySearch(data, 0, data.Length, value, Comparer<T>.Default);
-		public static int Search<T>(T[] data, int index, int length, T value) => Array.BinarySearch(data, index, length, value, Comparer<T>.Default);
-		public static int Search<T>(T[] data, T value, IComparer<T> comparer) => Array.BinarySearch(data, 0, data.Length, value, comparer);
-		public static int Search<T>(T[] data, int index, int length, T value, IComparer<T> comparer) => Array.BinarySearch(data, index, length, value, comparer);
-
 		public static int Search<T>(IList<T> data, T value) => Search(data, 0, data.Count, value, Comparer<T>.Default);
 		public static int Search<T>(IList<T> data, int index, int length, T value) => Search(data, index, length, value, Comparer<T>.Default);
 		public static int Search<T>(IList<T> data, T value, IComparer<T> comparer) => Search(data, 0, data.Count, value, comparer);
