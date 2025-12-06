@@ -27,43 +27,30 @@ namespace Kryz.Utils
 
 		public static void Merge<T>(Span<T> data, int middle, IComparer<T> comparer)
 		{
+			int right = data.Length - 1;
 			int leftLength = middle;
-			int rightLength = data.Length - middle;
-			T[] leftTempArray = ArrayPool<T>.Shared.Rent(leftLength);
-			T[] rightTempArray = ArrayPool<T>.Shared.Rent(rightLength);
+			T[] leftTemp = ArrayPool<T>.Shared.Rent(leftLength);
 
-			data[..leftLength].CopyTo(leftTempArray);
-			data[middle..].CopyTo(rightTempArray);
+			data[..leftLength].CopyTo(leftTemp);
 
-			int i = 0, j = 0, k = 0;
+			int i = 0; // index in leftTemp
+			int j = middle; // index in right half of data
+			int k = 0; // index to write in data
 
-			while (i < leftLength && j < rightLength)
+			// Merge from leftTemp and right half in data
+			while (i < leftLength && j <= right)
 			{
-				if (comparer.Compare(leftTempArray[i], rightTempArray[j]) <= 0)
-				{
-					data[k++] = leftTempArray[i++];
-				}
-				else
-				{
-					data[k++] = rightTempArray[j++];
-				}
+				data[k++] = comparer.Compare(leftTemp[i], data[j]) <= 0 ? leftTemp[i++] : data[j++];
 			}
 
+			// Copy any remaining elements from leftTemp (right half is already in place)
 			while (i < leftLength)
 			{
-				data[k++] = leftTempArray[i++];
+				data[k++] = leftTemp[i++];
 			}
 
-			while (j < rightLength)
-			{
-				data[k++] = rightTempArray[j++];
-			}
-
-			Array.Clear(leftTempArray, 0, leftLength);
-			Array.Clear(rightTempArray, 0, rightLength);
-
-			ArrayPool<T>.Shared.Return(leftTempArray);
-			ArrayPool<T>.Shared.Return(rightTempArray);
+			Array.Clear(leftTemp, 0, leftLength);
+			ArrayPool<T>.Shared.Return(leftTemp);
 		}
 
 		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
@@ -85,43 +72,29 @@ namespace Kryz.Utils
 
 		public static void Merge<T>(T[] data, int left, int middle, int right, IComparer<T> comparer)
 		{
-			int leftArrayLength = middle - left + 1;
-			int rightArrayLength = right - middle;
-			T[] leftTempArray = ArrayPool<T>.Shared.Rent(leftArrayLength);
-			T[] rightTempArray = ArrayPool<T>.Shared.Rent(rightArrayLength);
+			int leftLength = middle - left + 1;
+			T[] leftTemp = ArrayPool<T>.Shared.Rent(leftLength);
 
-			Array.Copy(data, left, leftTempArray, 0, leftArrayLength);
-			Array.Copy(data, middle + 1, rightTempArray, 0, rightArrayLength);
+			Array.Copy(data, left, leftTemp, 0, leftLength);
 
-			int i = 0, j = 0, k = left;
+			int i = 0; // index in leftTemp
+			int j = middle + 1; // index in right half of data
+			int k = left; // index to write in data
 
-			while (i < leftArrayLength && j < rightArrayLength)
+			// Merge from leftTemp and right half in data
+			while (i < leftLength && j <= right)
 			{
-				if (comparer.Compare(leftTempArray[i], rightTempArray[j]) <= 0)
-				{
-					data[k++] = leftTempArray[i++];
-				}
-				else
-				{
-					data[k++] = rightTempArray[j++];
-				}
+				data[k++] = comparer.Compare(leftTemp[i], data[j]) <= 0 ? leftTemp[i++] : data[j++];
 			}
 
-			while (i < leftArrayLength)
+			// Copy any remaining elements from leftTemp (right half is already in place)
+			while (i < leftLength)
 			{
-				data[k++] = leftTempArray[i++];
+				data[k++] = leftTemp[i++];
 			}
 
-			while (j < rightArrayLength)
-			{
-				data[k++] = rightTempArray[j++];
-			}
-
-			Array.Clear(leftTempArray, 0, leftArrayLength);
-			Array.Clear(rightTempArray, 0, rightArrayLength);
-
-			ArrayPool<T>.Shared.Return(leftTempArray);
-			ArrayPool<T>.Shared.Return(rightTempArray);
+			Array.Clear(leftTemp, 0, leftLength);
+			ArrayPool<T>.Shared.Return(leftTemp);
 		}
 
 		public static void Sort<T>(IList<T> data) => Sort(data, 0, data.Count, Comparer<T>.Default);
@@ -143,47 +116,32 @@ namespace Kryz.Utils
 
 		public static void Merge<T>(IList<T> data, int left, int middle, int right, IComparer<T> comparer)
 		{
-			int leftArrayLength = middle - left + 1;
-			int rightArrayLength = right - middle;
-			T[] leftTempArray = ArrayPool<T>.Shared.Rent(leftArrayLength);
-			T[] rightTempArray = ArrayPool<T>.Shared.Rent(rightArrayLength);
+			int leftLength = middle - left + 1;
+			T[] leftTemp = ArrayPool<T>.Shared.Rent(leftLength);
 
-			int i, j;
-			for (i = 0; i < leftArrayLength; ++i)
-				leftTempArray[i] = data[left + i];
-			for (j = 0; j < rightArrayLength; ++j)
-				rightTempArray[j] = data[middle + 1 + j];
-
-			i = j = 0;
-			int k = left;
-
-			while (i < leftArrayLength && j < rightArrayLength)
+			for (int l = 0; l < leftLength; l++)
 			{
-				if (comparer.Compare(leftTempArray[i], rightTempArray[j]) <= 0)
-				{
-					data[k++] = leftTempArray[i++];
-				}
-				else
-				{
-					data[k++] = rightTempArray[j++];
-				}
+				leftTemp[l] = data[left + l];
 			}
 
-			while (i < leftArrayLength)
+			int i = 0; // index in leftTemp
+			int j = middle + 1; // index in right half of data
+			int k = left; // index to write in data
+
+			// Merge from leftTemp and right half in data
+			while (i < leftLength && j <= right)
 			{
-				data[k++] = leftTempArray[i++];
+				data[k++] = comparer.Compare(leftTemp[i], data[j]) <= 0 ? leftTemp[i++] : data[j++];
 			}
 
-			while (j < rightArrayLength)
+			// Copy any remaining elements from leftTemp (right half is already in place)
+			while (i < leftLength)
 			{
-				data[k++] = rightTempArray[j++];
+				data[k++] = leftTemp[i++];
 			}
 
-			Array.Clear(leftTempArray, 0, leftArrayLength);
-			Array.Clear(rightTempArray, 0, rightArrayLength);
-
-			ArrayPool<T>.Shared.Return(leftTempArray);
-			ArrayPool<T>.Shared.Return(rightTempArray);
+			Array.Clear(leftTemp, 0, leftLength);
+			ArrayPool<T>.Shared.Return(leftTemp);
 		}
 	}
 }
