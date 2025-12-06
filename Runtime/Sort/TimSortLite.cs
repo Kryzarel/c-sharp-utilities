@@ -9,6 +9,12 @@ namespace Kryz.Utils
 	/// </summary>
 	public static class TimSortLite
 	{
+		// Array overloads allow us to use this class as a drop-in replacement for Array.Sort
+		public static void Sort<T>(T[] data) => Sort(data.AsSpan(), Comparer<T>.Default);
+		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data.AsSpan(), comparer);
+		public static void Sort<T>(T[] data, int index, int length) => Sort(data.AsSpan(index, length), Comparer<T>.Default);
+		public static void Sort<T>(T[] data, int index, int length, IComparer<T> comparer) => Sort(data.AsSpan(index, length), comparer);
+
 		public static void Sort<T>(Span<T> data) => Sort(data, Comparer<T>.Default);
 
 		public static void Sort<T>(Span<T> data, IComparer<T> comparer)
@@ -34,37 +40,9 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
-		public static void Sort<T>(T[] data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
-		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data, 0, data.Length, comparer);
-
-		public static void Sort<T>(T[] data, int index, int length, IComparer<T> comparer)
-		{
-			int end = index + length;
-			int minRun = ComputeMinRun(length);
-
-			// Sort small runs using Binary Insertion Sort
-			for (int left = index; left < end; left += minRun)
-			{
-				int len = Math.Min(minRun, end - left);
-				BinarySort.Sort(data, left, len, comparer);
-			}
-
-			// Merge runs in powers of two: minRun -> 2*minRun -> 4*minRun -> ...
-			for (int size = minRun; size < length; size *= 2)
-			{
-				for (int left = index; left + size < end; left += 2 * size)
-				{
-					int mid = left + size - 1;
-					int right = Math.Min(left + 2 * size - 1, end - 1);
-					MergeSort.Merge(data, left, mid, right, comparer);
-				}
-			}
-		}
-
 		public static void Sort<T>(IList<T> data) => Sort(data, 0, data.Count, Comparer<T>.Default);
-		public static void Sort<T>(IList<T> data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
 		public static void Sort<T>(IList<T> data, IComparer<T> comparer) => Sort(data, 0, data.Count, comparer);
+		public static void Sort<T>(IList<T> data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
 
 		public static void Sort<T>(IList<T> data, int index, int length, IComparer<T> comparer)
 		{

@@ -9,6 +9,12 @@ namespace Kryz.Utils
 	/// </summary>
 	public static class InsertionSort
 	{
+		// Array overloads allow us to use this class as a drop-in replacement for Array.Sort
+		public static void Sort<T>(T[] data) => Sort(data.AsSpan(), Comparer<T>.Default);
+		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data.AsSpan(), comparer);
+		public static void Sort<T>(T[] data, int index, int length) => Sort(data.AsSpan(index, length), Comparer<T>.Default);
+		public static void Sort<T>(T[] data, int index, int length, IComparer<T> comparer) => Sort(data.AsSpan(index, length), comparer);
+
 		public static void Sort<T>(Span<T> data) => Sort(data, Comparer<T>.Default);
 
 		public static void Sort<T>(Span<T> data, IComparer<T> comparer)
@@ -19,26 +25,6 @@ namespace Kryz.Utils
 
 				int j = i;
 				for (; j > 0 && comparer.Compare(data[j - 1], x) > 0; j--)
-				{
-					data[j] = data[j - 1];
-				}
-
-				data[j] = x;
-			}
-		}
-
-		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
-		public static void Sort<T>(T[] data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
-		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data, 0, data.Length, comparer);
-
-		public static void Sort<T>(T[] data, int index, int length, IComparer<T> comparer)
-		{
-			for (int i = index + 1; i < index + length; i++)
-			{
-				T x = data[i];
-
-				int j = i;
-				for (; j > index && comparer.Compare(data[j - 1], x) > 0; j--)
 				{
 					data[j] = data[j - 1];
 				}
