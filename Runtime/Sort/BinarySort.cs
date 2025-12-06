@@ -21,7 +21,6 @@ namespace Kryz.Utils
 
 				// Find location to insert using binary search
 				int j = BinarySearch.Rightmost(data, index, i - index, x, comparer);
-				if (j < 0) j = ~j;
 
 				// Shift data one position to the right
 				Array.Copy(data, j, data, j + 1, i - j);
@@ -43,7 +42,6 @@ namespace Kryz.Utils
 
 				// Find location to insert using binary search
 				int j = BinarySearch.Rightmost(data, index, i - index, x, comparer);
-				if (j < 0) j = ~j;
 
 				// Shift data one position to the right
 				for (int k = i; k > j; k--)
