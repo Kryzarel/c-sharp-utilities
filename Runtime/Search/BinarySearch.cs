@@ -57,6 +57,29 @@ namespace Kryz.Utils
 		// Required for BinarySort to be stable
 		// -------------------------------------
 
+		public static int Rightmost<T, TComparer>(Span<T> data, T value) where TComparer : IComparer<T>
+		{
+			return Rightmost(data, value, Comparer<T>.Default);
+		}
+
+		public static int Rightmost<T, TComparer>(Span<T> data, T value, TComparer comparer) where TComparer : IComparer<T>
+		{
+			int min = 0;
+			int max = data.Length - 1;
+
+			while (min <= max)
+			{
+				int mid = min + ((max - min) >> 1);
+
+				// Doesn't return early for '== 0' case to preserve stability
+				if (comparer.Compare(data[mid], value) <= 0)
+					min = mid + 1;
+				else
+					max = mid - 1;
+			}
+			return min;
+		}
+
 		public static int Rightmost<T>(T[] data, T value) => Rightmost(data, 0, data.Length, value, Comparer<T>.Default);
 		public static int Rightmost<T>(T[] data, int index, int length, T value) => Rightmost(data, index, length, value, Comparer<T>.Default);
 		public static int Rightmost<T>(T[] data, T value, IComparer<T> comparer) => Rightmost(data, 0, data.Length, value, comparer);

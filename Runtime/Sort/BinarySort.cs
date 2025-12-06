@@ -9,6 +9,28 @@ namespace Kryz.Utils
 	/// </summary>
 	public static class BinarySort
 	{
+		public static void Sort<T>(Span<T> data) => Sort(data, Comparer<T>.Default);
+
+		public static void Sort<T>(Span<T> data, IComparer<T> comparer, int sorted = 1)
+		{
+			for (int i = sorted; i < data.Length; i++)
+			{
+				T x = data[i];
+
+				// Find location to insert using binary search
+				int j = BinarySearch.Rightmost(data[..i], x, comparer);
+
+				// Shift data one position to the right
+				for (int k = i; k > j; k--)
+				{
+					data[k] = data[k - 1];
+				}
+
+				// Place element at its correct location
+				data[j] = x;
+			}
+		}
+
 		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data, 0, data.Length, comparer);

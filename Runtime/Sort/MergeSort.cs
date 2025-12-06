@@ -10,6 +10,62 @@ namespace Kryz.Utils
 	/// </summary>
 	public static class MergeSort
 	{
+		public static void Sort<T>(Span<T> data) => Sort(data, Comparer<T>.Default);
+
+		public static void Sort<T>(Span<T> data, IComparer<T> comparer)
+		{
+			int length = data.Length;
+
+			if (length > 1)
+			{
+				int middle = length >> 1;
+				Sort(data[..middle], comparer);
+				Sort(data[middle..], comparer);
+				Merge(data, middle, comparer);
+			}
+		}
+
+		public static void Merge<T>(Span<T> data, int middle, IComparer<T> comparer)
+		{
+			int leftLength = middle;
+			int rightLength = data.Length - middle;
+			T[] leftTempArray = ArrayPool<T>.Shared.Rent(leftLength);
+			T[] rightTempArray = ArrayPool<T>.Shared.Rent(rightLength);
+
+			data[..leftLength].CopyTo(leftTempArray);
+			data[middle..].CopyTo(rightTempArray);
+
+			int i = 0, j = 0, k = 0;
+
+			while (i < leftLength && j < rightLength)
+			{
+				if (comparer.Compare(leftTempArray[i], rightTempArray[j]) <= 0)
+				{
+					data[k++] = leftTempArray[i++];
+				}
+				else
+				{
+					data[k++] = rightTempArray[j++];
+				}
+			}
+
+			while (i < leftLength)
+			{
+				data[k++] = leftTempArray[i++];
+			}
+
+			while (j < rightLength)
+			{
+				data[k++] = rightTempArray[j++];
+			}
+
+			Array.Clear(leftTempArray, 0, leftLength);
+			Array.Clear(rightTempArray, 0, rightLength);
+
+			ArrayPool<T>.Shared.Return(leftTempArray);
+			ArrayPool<T>.Shared.Return(rightTempArray);
+		}
+
 		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data, 0, data.Length, comparer);

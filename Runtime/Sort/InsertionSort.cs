@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Kryz.Utils
@@ -8,6 +9,24 @@ namespace Kryz.Utils
 	/// </summary>
 	public static class InsertionSort
 	{
+		public static void Sort<T>(Span<T> data) => Sort(data, Comparer<T>.Default);
+
+		public static void Sort<T>(Span<T> data, IComparer<T> comparer)
+		{
+			for (int i = 1; i < data.Length; i++)
+			{
+				T x = data[i];
+
+				int j = i;
+				for (; j > 0 && comparer.Compare(data[j - 1], x) > 0; j--)
+				{
+					data[j] = data[j - 1];
+				}
+
+				data[j] = x;
+			}
+		}
+
 		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data, 0, data.Length, comparer);

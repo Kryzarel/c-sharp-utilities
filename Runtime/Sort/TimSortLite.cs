@@ -9,6 +9,31 @@ namespace Kryz.Utils
 	/// </summary>
 	public static class TimSortLite
 	{
+		public static void Sort<T>(Span<T> data) => Sort(data, Comparer<T>.Default);
+
+		public static void Sort<T>(Span<T> data, IComparer<T> comparer)
+		{
+			int length = data.Length;
+			int minRun = ComputeMinRun(data.Length);
+
+			// Sort small runs using Binary Insertion Sort
+			for (int left = 0; left < length; left += minRun)
+			{
+				int len = Math.Min(minRun, length - left);
+				BinarySort.Sort(data[left..(left + len)], comparer);
+			}
+
+			// Merge runs in powers of two: minRun -> 2*minRun -> 4*minRun -> ...
+			for (int size = minRun; size < length; size *= 2)
+			{
+				for (int left = 0; left + size < length; left += 2 * size)
+				{
+					int right = Math.Min(left + 2 * size, length);
+					MergeSort.Merge(data[left..right], size, comparer);
+				}
+			}
+		}
+
 		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
 		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data, 0, data.Length, comparer);
