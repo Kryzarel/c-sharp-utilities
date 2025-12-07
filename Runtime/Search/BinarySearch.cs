@@ -59,14 +59,11 @@ namespace Kryz.Utils
 
 		// Array overloads allow us to use this class as a drop-in replacement for Array.BinarySearch
 		public static int Rightmost<T>(T[] data, T value) => Rightmost(data.AsSpan(), value, Comparer<T>.Default);
-		public static int Rightmost<T>(T[] data, T value, IComparer<T> comparer) => Rightmost(data.AsSpan(), value, comparer);
 		public static int Rightmost<T>(T[] data, int index, int length, T value) => Rightmost(data.AsSpan(index, length), value, Comparer<T>.Default);
-		public static int Rightmost<T>(T[] data, int index, int length, T value, IComparer<T> comparer) => Rightmost(data.AsSpan(index, length), value, comparer);
+		public static int Rightmost<T, TComparer>(T[] data, T value, TComparer comparer) where TComparer : IComparer<T> => Rightmost(data.AsSpan(), value, comparer);
+		public static int Rightmost<T, TComparer>(T[] data, int index, int length, T value, TComparer comparer) where TComparer : IComparer<T> => Rightmost(data.AsSpan(index, length), value, comparer);
 
-		public static int Rightmost<T, TComparer>(Span<T> data, T value) where TComparer : IComparer<T>
-		{
-			return Rightmost(data, value, Comparer<T>.Default);
-		}
+		public static int Rightmost<T>(Span<T> data, T value) => Rightmost(data, value, Comparer<T>.Default);
 
 		public static int Rightmost<T, TComparer>(Span<T> data, T value, TComparer comparer) where TComparer : IComparer<T>
 		{

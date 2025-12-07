@@ -11,13 +11,13 @@ namespace Kryz.Utils
 	{
 		// Array overloads allow us to use this class as a drop-in replacement for Array.Sort
 		public static void Sort<T>(T[] data) => Sort(data.AsSpan(), Comparer<T>.Default);
-		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data.AsSpan(), comparer);
 		public static void Sort<T>(T[] data, int index, int length) => Sort(data.AsSpan(index, length), Comparer<T>.Default);
-		public static void Sort<T>(T[] data, int index, int length, IComparer<T> comparer) => Sort(data.AsSpan(index, length), comparer);
+		public static void Sort<T, TComparer>(T[] data, TComparer comparer) where TComparer : IComparer<T> => Sort(data.AsSpan(), comparer);
+		public static void Sort<T, TComparer>(T[] data, int index, int length, TComparer comparer) where TComparer : IComparer<T> => Sort(data.AsSpan(index, length), comparer);
 
 		public static void Sort<T>(Span<T> data) => Sort(data, Comparer<T>.Default);
 
-		public static void Sort<T>(Span<T> data, IComparer<T> comparer)
+		public static void Sort<T, TComparer>(Span<T> data, TComparer comparer) where TComparer : IComparer<T>
 		{
 			int length = data.Length;
 			int minRun = ComputeMinRun(data.Length);
