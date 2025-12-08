@@ -24,7 +24,7 @@ namespace Kryz.Utils
 
 			if (length > 1)
 			{
-				int middle = length >> 1;
+				int middle = length / 2;
 				Sort(data[..middle], comparer);
 				Sort(data[middle..], comparer);
 				Merge(data, middle, comparer);
@@ -60,12 +60,15 @@ namespace Kryz.Utils
 		}
 
 		public static void Sort<T>(IList<T> data) => Sort(data, 0, data.Count, Comparer<T>.Default);
-		public static void Sort<T>(IList<T> data, IComparer<T> comparer) => Sort(data, 0, data.Count, comparer);
 		public static void Sort<T>(IList<T> data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
+		public static void Sort<T, TComparer>(IList<T> data, TComparer comparer) where TComparer : IComparer<T> => Sort(data, 0, data.Count, comparer);
 
-		public static void Sort<T>(IList<T> data, int index, int length, IComparer<T> comparer) => SortRecursive(data, index, index + length - 1, comparer);
+		public static void Sort<T, TComparer>(IList<T> data, int index, int length, TComparer comparer) where TComparer : IComparer<T>
+		{
+			SortRecursive(data, index, index + length - 1, comparer);
+		}
 
-		public static void SortRecursive<T>(IList<T> data, int left, int right, IComparer<T> comparer)
+		public static void SortRecursive<T, TComparer>(IList<T> data, int left, int right, TComparer comparer) where TComparer : IComparer<T>
 		{
 			if (left < right)
 			{
@@ -76,7 +79,7 @@ namespace Kryz.Utils
 			}
 		}
 
-		public static void Merge<T>(IList<T> data, int left, int middle, int right, IComparer<T> comparer)
+		public static void Merge<T, TComparer>(IList<T> data, int left, int middle, int right, TComparer comparer) where TComparer : IComparer<T>
 		{
 			int leftLength = middle - left + 1;
 			T[] leftTemp = ArrayPool<T>.Shared.Rent(leftLength);

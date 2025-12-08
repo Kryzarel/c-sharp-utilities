@@ -7,9 +7,9 @@ namespace Kryz.Utils
 	{
 		public static int Search<T>(IList<T> data, T value) => Search(data, 0, data.Count, value, Comparer<T>.Default);
 		public static int Search<T>(IList<T> data, int index, int length, T value) => Search(data, index, length, value, Comparer<T>.Default);
-		public static int Search<T>(IList<T> data, T value, IComparer<T> comparer) => Search(data, 0, data.Count, value, comparer);
+		public static int Search<T, TComparer>(IList<T> data, T value, TComparer comparer) where TComparer : IComparer<T> => Search(data, 0, data.Count, value, comparer);
 
-		public static int Search<T>(IList<T> data, int index, int length, T value, IComparer<T> comparer)
+		public static int Search<T, TComparer>(IList<T> data, int index, int length, T value, TComparer comparer) where TComparer : IComparer<T>
 		{
 			int min = index;
 			int max = index + length - 1;
@@ -31,9 +31,9 @@ namespace Kryz.Utils
 
 		public static int Search<T>(IReadOnlyList<T> data, T value) => Search(data, 0, data.Count, value, Comparer<T>.Default);
 		public static int Search<T>(IReadOnlyList<T> data, int index, int length, T value) => Search(data, index, length, value, Comparer<T>.Default);
-		public static int Search<T>(IReadOnlyList<T> data, T value, IComparer<T> comparer) => Search(data, 0, data.Count, value, comparer);
+		public static int Search<T, TComparer>(IReadOnlyList<T> data, T value, TComparer comparer) where TComparer : IComparer<T> => Search(data, 0, data.Count, value, comparer);
 
-		public static int Search<T>(IReadOnlyList<T> data, int index, int length, T value, IComparer<T> comparer)
+		public static int Search<T, TComparer>(IReadOnlyList<T> data, int index, int length, T value, TComparer comparer) where TComparer : IComparer<T>
 		{
 			int min = index;
 			int max = index + length - 1;
@@ -85,9 +85,9 @@ namespace Kryz.Utils
 
 		public static int Rightmost<T>(IList<T> data, T value) => Rightmost(data, 0, data.Count, value, Comparer<T>.Default);
 		public static int Rightmost<T>(IList<T> data, int index, int length, T value) => Rightmost(data, index, length, value, Comparer<T>.Default);
-		public static int Rightmost<T>(IList<T> data, T value, IComparer<T> comparer) => Rightmost(data, 0, data.Count, value, comparer);
+		public static int Rightmost<T, TComparer>(IList<T> data, T value, TComparer comparer) where TComparer : IComparer<T> => Rightmost(data, 0, data.Count, value, comparer);
 
-		public static int Rightmost<T>(IList<T> data, int index, int length, T value, IComparer<T> comparer)
+		public static int Rightmost<T, TComparer>(IList<T> data, int index, int length, T value, TComparer comparer) where TComparer : IComparer<T>
 		{
 			int min = index;
 			int max = index + length - 1;
@@ -107,9 +107,9 @@ namespace Kryz.Utils
 
 		public static int Rightmost<T>(IReadOnlyList<T> data, T value) => Rightmost(data, 0, data.Count, value, Comparer<T>.Default);
 		public static int Rightmost<T>(IReadOnlyList<T> data, int index, int length, T value) => Rightmost(data, index, length, value, Comparer<T>.Default);
-		public static int Rightmost<T>(IReadOnlyList<T> data, T value, IComparer<T> comparer) => Rightmost(data, 0, data.Count, value, comparer);
+		public static int Rightmost<T, TComparer>(IReadOnlyList<T> data, T value, TComparer comparer) where TComparer : IComparer<T> => Rightmost(data, 0, data.Count, value, comparer);
 
-		public static int Rightmost<T>(IReadOnlyList<T> data, int index, int length, T value, IComparer<T> comparer)
+		public static int Rightmost<T, TComparer>(IReadOnlyList<T> data, int index, int length, T value, TComparer comparer) where TComparer : IComparer<T>
 		{
 			int min = index;
 			int max = index + length - 1;

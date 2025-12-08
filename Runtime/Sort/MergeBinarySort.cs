@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Kryz.Utils
@@ -10,36 +11,38 @@ namespace Kryz.Utils
 	{
 		public const int MergeThreshold = 64;
 
-		public static void Sort<T>(T[] data) => Sort(data, 0, data.Length, Comparer<T>.Default);
-		public static void Sort<T>(T[] data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
-		public static void Sort<T>(T[] data, IComparer<T> comparer) => Sort(data, 0, data.Length, comparer);
+		// Array overloads allow us to use this class as a drop-in replacement for Array.Sort
+		public static void Sort<T>(T[] data) => Sort(data.AsSpan(), Comparer<T>.Default);
+		public static void Sort<T>(T[] data, int index, int length) => Sort(data.AsSpan(index, length), Comparer<T>.Default);
+		public static void Sort<T, TComparer>(T[] data, TComparer comparer) where TComparer : IComparer<T> => Sort(data.AsSpan(), comparer);
+		public static void Sort<T, TComparer>(T[] data, int index, int length, TComparer comparer) where TComparer : IComparer<T> => Sort(data.AsSpan(index, length), comparer);
 
-		public static void Sort<T>(T[] data, int index, int length, IComparer<T> comparer) => SortRecursive(data, index, index + length - 1, comparer);
+		public static void Sort<T>(Span<T> data) => Sort(data, Comparer<T>.Default);
 
-		public static void SortRecursive<T>(T[] data, int left, int right, IComparer<T> comparer)
+		public static void Sort<T, TComparer>(Span<T> data, TComparer comparer) where TComparer : IComparer<T>
 		{
-			int count = right - left + 1;
+			int length = data.Length;
 
-			if (count < MergeThreshold)
+			if (length < MergeThreshold)
 			{
-				BinarySort.Sort(data, left, count, comparer);
+				BinarySort.Sort(data, comparer);
 			}
 			else
 			{
-				int middle = left + (right - left) / 2;
-				SortRecursive(data, left, middle, comparer);
-				SortRecursive(data, middle + 1, right, comparer);
-				MergeSort.Merge(data, left, middle, right, comparer);
+				int middle = length / 2;
+				Sort(data[..middle], comparer);
+				Sort(data[middle..], comparer);
+				MergeSort.Merge(data, middle, comparer);
 			}
 		}
 
 		public static void Sort<T>(IList<T> data) => Sort(data, 0, data.Count, Comparer<T>.Default);
 		public static void Sort<T>(IList<T> data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
-		public static void Sort<T>(IList<T> data, IComparer<T> comparer) => Sort(data, 0, data.Count, comparer);
+		public static void Sort<T, TComparer>(IList<T> data, TComparer comparer) where TComparer : IComparer<T> => Sort(data, 0, data.Count, comparer);
 
-		public static void Sort<T>(IList<T> data, int index, int length, IComparer<T> comparer) => SortRecursive(data, index, index + length - 1, comparer);
+		public static void Sort<T, TComparer>(IList<T> data, int index, int length, TComparer comparer) where TComparer : IComparer<T> => SortRecursive(data, index, index + length - 1, comparer);
 
-		public static void SortRecursive<T>(IList<T> data, int left, int right, IComparer<T> comparer)
+		public static void SortRecursive<T, TComparer>(IList<T> data, int left, int right, TComparer comparer) where TComparer : IComparer<T>
 		{
 			int count = right - left + 1;
 

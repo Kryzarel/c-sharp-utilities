@@ -20,7 +20,7 @@ namespace Kryz.Utils
 		public static void Sort<T, TComparer>(Span<T> data, TComparer comparer) where TComparer : IComparer<T>
 		{
 			int length = data.Length;
-			int minRun = ComputeMinRun(data.Length);
+			int minRun = ComputeMinRun(length);
 
 			// Sort small runs using Binary Insertion Sort
 			for (int left = 0; left < length; left += minRun)
@@ -41,10 +41,10 @@ namespace Kryz.Utils
 		}
 
 		public static void Sort<T>(IList<T> data) => Sort(data, 0, data.Count, Comparer<T>.Default);
-		public static void Sort<T>(IList<T> data, IComparer<T> comparer) => Sort(data, 0, data.Count, comparer);
 		public static void Sort<T>(IList<T> data, int index, int length) => Sort(data, index, length, Comparer<T>.Default);
+		public static void Sort<T, TComparer>(IList<T> data, TComparer comparer) where TComparer : IComparer<T> => Sort(data, 0, data.Count, comparer);
 
-		public static void Sort<T>(IList<T> data, int index, int length, IComparer<T> comparer)
+		public static void Sort<T, TComparer>(IList<T> data, int index, int length, TComparer comparer) where TComparer : IComparer<T>
 		{
 			int end = index + length;
 			int minRun = ComputeMinRun(length);
