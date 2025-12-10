@@ -36,23 +36,24 @@ namespace Kryz.Utils
 			int right = data.Length - 1;
 			int leftLength = middle;
 			T[] leftTemp = ArrayPool<T>.Shared.Rent(leftLength);
+			Span<T> leftBuffer = leftTemp.AsSpan(0, leftLength);
 
-			data[..leftLength].CopyTo(leftTemp);
+			data[..leftLength].CopyTo(leftBuffer);
 
-			int i = 0; // index in leftTemp
+			int i = 0; // index in leftBuffer
 			int j = middle; // index in right half of data
 			int k = 0; // index to write in data
 
-			// Merge from leftTemp and right half in data
+			// Merge from leftBuffer and right half in data
 			while (i < leftLength && j <= right)
 			{
-				data[k++] = comparer.Compare(leftTemp[i], data[j]) <= 0 ? leftTemp[i++] : data[j++];
+				data[k++] = comparer.Compare(leftBuffer[i], data[j]) <= 0 ? leftBuffer[i++] : data[j++];
 			}
 
-			// Copy any remaining elements from leftTemp (right half is already in place)
+			// Copy any remaining elements from leftBuffer (right half is already in place)
 			while (i < leftLength)
 			{
-				data[k++] = leftTemp[i++];
+				data[k++] = leftBuffer[i++];
 			}
 
 			Array.Clear(leftTemp, 0, leftLength);
