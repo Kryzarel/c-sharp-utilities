@@ -16,8 +16,6 @@ namespace Kryz.Utils
 
 		public readonly Span<T> AsSpan() => span[..count];
 
-		public readonly ref T this[int i] => ref span[..count][i];
-
 		public ValuePooledList(Span<T> initialSpan)
 		{
 			arrayPool = ArrayPool<T>.Shared;
@@ -94,5 +92,6 @@ namespace Kryz.Utils
 		}
 
 		public static implicit operator Span<T>(ValuePooledList<T> pooled) => pooled.AsSpan();
+		public static implicit operator ReadOnlySpan<T>(ValuePooledList<T> pooled) => pooled.AsSpan();
 	}
 }
