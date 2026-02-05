@@ -237,6 +237,8 @@ namespace Kryz.Utils
 			return result;
 		}
 
+		public Span<T> AsSpan() => array[..count];
+
 		public void EnsureCapacity(int capacity)
 		{
 			if (array.Length.TryGetNewCapacity(capacity, out int newCapacity))
