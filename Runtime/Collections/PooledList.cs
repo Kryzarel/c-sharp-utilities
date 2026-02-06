@@ -11,7 +11,7 @@ namespace Kryz.Utils
 		private int version;
 		private int count;
 		private T[] array;
-		private ArrayPool<T> arrayPool;
+		private ArrayPool<T> pool;
 		private readonly bool isPooled;
 
 		public bool IsReadOnly => false;
@@ -36,17 +36,26 @@ namespace Kryz.Utils
 			set => array[index] = value;
 		}
 
+		/// <summary>
+		/// Rent a <see cref="PooledList{T}"/> from the pool. In order to return it, call the <see cref="Dispose"/> method.
+		/// </summary>
+		/// <param name="capacity">The minimum initial size of the internal array used by the <see cref="PooledList{T}"/>. Since this array is obtained from an <see cref="ArrayPool{T}"/>, the actual initial size may be larger than requested.</param>
+		/// <param name="arrayPool">The <see cref="ArrayPool{T}"/> object used to obtain the internal arrays. If <see cref="null"/>, <see cref="ArrayPool{T}.Shared"/> is used.</param>
+		/// <returns>A <see cref="PooledList{T}"/> from the pool.</returns>
 		public static PooledList<T> Rent(int capacity = 0, ArrayPool<T>? arrayPool = null)
 		{
 			return Pool.Rent(capacity, arrayPool);
 		}
 
+		/// <summary>
+		/// Create a new <see cref="PooledList{T}"/>, which obtains its internal arrays from an <see cref="ArrayPool{T}"/>. In order to correctly return the internal array to the <see cref="ArrayPool{T}"/>, call the <see cref="Dispose"/> method.
+		/// </summary>
+		/// <param name="capacity">The minimum initial size of the internal array used by the <see cref="PooledList{T}"/>. Since this array is obtained from an <see cref="ArrayPool{T}"/>, the actual initial size may be larger than requested.</param>
+		/// <param name="arrayPool">The <see cref="ArrayPool{T}"/> object used to obtain the internal arrays. If <see cref="null"/>, <see cref="ArrayPool{T}.Shared"/> is used.</param>
+		/// <returns>A new <see cref="PooledList{T}"/> object.</returns>
 		public PooledList(int capacity = 0, ArrayPool<T>? arrayPool = null)
 		{
-			this.arrayPool = arrayPool ?? ArrayPool<T>.Shared;
-			array = this.arrayPool.Rent(Math.Max(capacity, 16));
-			count = 0;
-			version = 0;
+			Init(capacity, arrayPool, out pool, out array, out count, out version);
 		}
 
 		private PooledList(int capacity, ArrayPool<T>? arrayPool, bool isPooled) : this(capacity, arrayPool)
@@ -54,16 +63,18 @@ namespace Kryz.Utils
 			this.isPooled = isPooled;
 		}
 
-		/// <summary>
-		/// Used instead of constructor when renting from the static pool. Make sure to keep it equal to constructor, if that ever changes.
-		/// </summary>
 		private PooledList<T> Init(int capacity = 0, ArrayPool<T>? arrayPool = null)
 		{
-			this.arrayPool = arrayPool ?? ArrayPool<T>.Shared;
-			array = this.arrayPool.Rent(Math.Max(capacity, 16));
+			Init(capacity, arrayPool, out pool, out array, out count, out version);
+			return this;
+		}
+
+		private static void Init(int capacity, ArrayPool<T>? arrayPool, out ArrayPool<T> pool, out T[] array, out int count, out int version)
+		{
+			pool = arrayPool ?? ArrayPool<T>.Shared;
+			array = pool.Rent(capacity > 0 ? capacity : 1);
 			count = 0;
 			version = 0;
-			return this;
 		}
 
 		public void Add(T item)
@@ -244,9 +255,10 @@ namespace Kryz.Utils
 			if (array.Length.TryGetNewCapacity(capacity, out int newCapacity))
 			{
 				T[] oldArray = array;
-				array = arrayPool.Rent(newCapacity);
+				array = pool.Rent(newCapacity);
 				Array.Copy(oldArray, array, count);
-				arrayPool.Return(oldArray, clearArray: true);
+				Array.Clear(oldArray, 0, count);
+				pool.Return(oldArray);
 			}
 		}
 
@@ -262,7 +274,7 @@ namespace Kryz.Utils
 
 		public void Dispose()
 		{
-			if (array == null || arrayPool == null)
+			if (array == null || pool == null)
 			{
 				return;
 			}
@@ -270,9 +282,10 @@ namespace Kryz.Utils
 			count = 0;
 			version++;
 
-			arrayPool.Return(array, clearArray: true);
+			Array.Clear(array, 0, count);
+			pool.Return(array);
 			array = null!;
-			arrayPool = null!;
+			pool = null!;
 
 			if (isPooled)
 			{
