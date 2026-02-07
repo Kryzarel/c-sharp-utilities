@@ -283,7 +283,7 @@ namespace Kryz.Utils
 			return result;
 		}
 
-		public Span<T> AsSpan() => array[..count];
+		public Span<T> AsSpan() => array.AsSpan(0, count);
 
 		public void EnsureCapacity(int capacity)
 		{
