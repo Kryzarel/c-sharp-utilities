@@ -318,13 +318,13 @@ namespace Kryz.Utils
 				return;
 			}
 
-			count = 0;
-			version++;
-
 			Array.Clear(array, 0, count);
 			pool.Return(array);
 			array = null!;
 			pool = null!;
+
+			count = 0;
+			version++;
 
 			if (isPooled)
 			{
