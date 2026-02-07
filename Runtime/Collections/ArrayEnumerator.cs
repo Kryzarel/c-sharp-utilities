@@ -12,7 +12,6 @@ namespace Kryz.Utils
 		private T current;
 
 		public readonly T Current => current;
-
 		readonly object? IEnumerator.Current => Current;
 
 		public ArrayEnumerator(T[] array) : this(array, array.Length) { }
@@ -33,6 +32,9 @@ namespace Kryz.Utils
 				current = array[index++];
 				return true;
 			}
+
+			index = -1;
+			current = default!;
 			return false;
 		}
 

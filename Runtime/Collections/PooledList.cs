@@ -28,13 +28,19 @@ namespace Kryz.Utils
 			get => array.Length;
 		}
 
-		public T this[int index]
+		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => ref array[index];
+		}
+
+		T IList<T>.this[int index]
+		{
 			get => array[index];
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set => array[index] = value;
 		}
+
+		T IReadOnlyList<T>.this[int index] => array[index];
 
 		/// <summary>
 		/// Rent a <see cref="PooledList{T}"/> from the pool. In order to return it, call the <see cref="Dispose"/> method.
@@ -115,6 +121,39 @@ namespace Kryz.Utils
 					Add(item);
 				}
 			}
+		}
+
+		public void AddRange(ReadOnlySpan<T> span)
+		{
+			int newCount = count + span.Length;
+			if (newCount > count)
+			{
+				if (newCount > array.Length)
+				{
+					EnsureCapacity(newCount);
+				}
+				span.CopyTo(array[count..]);
+				count = newCount;
+				version++;
+			}
+		}
+
+		public void SetCount(int value)
+		{
+			if (value == count)
+				return;
+
+			if (value > count)
+			{
+				EnsureCapacity(value);
+			}
+			else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+			{
+				Array.Clear(array, value, count - value);
+			}
+
+			count = value;
+			version++;
 		}
 
 		public void Insert(int index, T item)
@@ -306,7 +345,11 @@ namespace Kryz.Utils
 		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(this.array, 0, array, arrayIndex, count);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(PooledList<T> list) => Array.Copy(array, 0, list.array, 0, count);
+		public void CopyTo(PooledList<T> list)
+		{
+			list.EnsureCapacity(count);
+			Array.Copy(array, 0, list.array, 0, count);
+		}
 
 		public Enumerator GetEnumerator() => new(this);
 

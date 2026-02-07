@@ -9,7 +9,6 @@ namespace Kryz.Utils
 		public struct Enumerator : IEnumerator<T>
 		{
 			private readonly PooledList<T> list;
-			private readonly int count;
 			private readonly int version;
 
 			private int index;
@@ -21,7 +20,6 @@ namespace Kryz.Utils
 			public Enumerator(PooledList<T> list)
 			{
 				this.list = list;
-				count = list.count;
 				version = list.version;
 				index = 0;
 				current = default!;
@@ -31,16 +29,17 @@ namespace Kryz.Utils
 			{
 				if (version != list.version)
 				{
-					index = list.count + 1;
-					current = default!;
 					throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
 				}
 
-				if (index < count)
+				if (index < list.count)
 				{
-					current = list[index++];
+					current = list.array[index++];
 					return true;
 				}
+
+				index = -1;
+				current = default!;
 				return false;
 			}
 
