@@ -31,16 +31,21 @@ namespace Kryz.Utils
 		public ref T this[int index]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref array[index];
+			get
+			{
+				if ((uint)index >= (uint)count)
+					throw new IndexOutOfRangeException("Index was out of range. Must be non-negative and less than the size of the collection.");
+				return ref array[index];
+			}
 		}
 
 		T IList<T>.this[int index]
 		{
-			get => array[index];
-			set => array[index] = value;
+			get => this[index];
+			set => this[index] = value;
 		}
 
-		T IReadOnlyList<T>.this[int index] => array[index];
+		T IReadOnlyList<T>.this[int index] => this[index];
 
 		/// <summary>
 		/// Rent a <see cref="PooledList{T}"/> from the pool. In order to return it, call the <see cref="Dispose"/> method.
