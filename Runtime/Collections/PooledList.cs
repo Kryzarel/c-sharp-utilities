@@ -147,7 +147,7 @@ namespace Kryz.Utils
 			{
 				EnsureCapacity(value);
 			}
-			else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+			else
 			{
 				Array.Clear(array, value, count - value);
 			}
@@ -202,10 +202,7 @@ namespace Kryz.Utils
 				Array.Copy(array, index + 1, array, index, count - index);
 			}
 
-			if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-			{
-				array[count] = default!;
-			}
+			array[count] = default!;
 		}
 
 		public void RemoveRange(int index, int count)
@@ -234,10 +231,7 @@ namespace Kryz.Utils
 				}
 
 				version++;
-				if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-				{
-					Array.Clear(array, this.count, count);
-				}
+				Array.Clear(array, this.count, count);
 			}
 		}
 
@@ -268,10 +262,7 @@ namespace Kryz.Utils
 				}
 			}
 
-			if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-			{
-				Array.Clear(array, freeIndex, count - freeIndex); // Clear the elements so that the gc can reclaim the references.
-			}
+			Array.Clear(array, freeIndex, count - freeIndex);
 
 			int result = count - freeIndex;
 			count = freeIndex;
@@ -303,10 +294,7 @@ namespace Kryz.Utils
 
 		public void Clear()
 		{
-			if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-			{
-				Array.Clear(array, 0, count);
-			}
+			Array.Clear(array, 0, count);
 			count = 0;
 			version++;
 		}
