@@ -143,24 +143,6 @@ namespace Kryz.Utils
 			}
 		}
 
-		public void SetCount(int value)
-		{
-			if (value == count)
-				return;
-
-			if (value > count)
-			{
-				EnsureCapacity(value);
-			}
-			else
-			{
-				Array.Clear(array, value, count - value);
-			}
-
-			count = value;
-			version++;
-		}
-
 		public void Insert(int index, T item)
 		{
 			if (count == array.Length)
@@ -283,7 +265,25 @@ namespace Kryz.Utils
 			return result;
 		}
 
-		public Span<T> AsSpan() => array.AsSpan(0, count);
+		public Span<T> AsSpan() => new(array, 0, count);
+
+		public void SetCount(int value)
+		{
+			if (value == count)
+				return;
+
+			if (value > count)
+			{
+				EnsureCapacity(value);
+			}
+			else
+			{
+				Array.Clear(array, value, count - value);
+			}
+
+			count = value;
+			version++;
+		}
 
 		public void EnsureCapacity(int capacity)
 		{
