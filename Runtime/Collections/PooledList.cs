@@ -80,6 +80,7 @@ namespace Kryz.Utils
 			return this;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static void Init(int capacity, ArrayPool<T>? arrayPool, out ArrayPool<T> pool, out T[] array, out int count, out int version)
 		{
 			pool = arrayPool ?? ArrayPool<T>.Shared;

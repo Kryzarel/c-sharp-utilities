@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 
 namespace Kryz.Utils
 {
@@ -7,11 +8,13 @@ namespace Kryz.Utils
 	{
 		private static class Pool
 		{
-			private static readonly PooledList<PooledList<T>> pool = new();
+			private static readonly ThreadLocal<LocalPool> threadLocalPool = new(() => new LocalPool());
 
 			public static PooledList<T> Rent(int capacity = 0, ArrayPool<T>? arrayPool = null)
 			{
-				if (TryGetFromPool(out PooledList<T>? list))
+				LocalPool pool = threadLocalPool.Value;
+
+				if (pool.TryGet(out PooledList<T>? list))
 				{
 					return list.Init(capacity, arrayPool);
 				}
@@ -20,26 +23,34 @@ namespace Kryz.Utils
 
 			public static void Return(PooledList<T> list)
 			{
-				lock (pool)
-				{
-					pool.Add(list);
-				}
+				threadLocalPool.Value.Return(list);
 			}
+		}
 
-			private static bool TryGetFromPool([MaybeNullWhen(returnValue: false)] out PooledList<T> list)
+		private sealed class LocalPool
+		{
+			// Maximum 128 pooled lists, prevent too much memory being used up, avoids resizing the pool
+			private readonly PooledList<T>[] pool = new PooledList<T>[128];
+			private int count;
+
+			public bool TryGet([MaybeNullWhen(returnValue: false)] out PooledList<T> list)
 			{
-				lock (pool)
+				if (count > 0)
 				{
-					int last = pool.count - 1;
-					if (last >= 0)
-					{
-						list = pool[last];
-						pool.RemoveAt(last);
-						return true;
-					}
+					list = pool[--count];
+					pool[count] = null!;
+					return true;
 				}
 				list = null;
 				return false;
+			}
+
+			public void Return(PooledList<T> list)
+			{
+				if (count < pool.Length)
+				{
+					pool[count++] = list;
+				}
 			}
 		}
 	}
