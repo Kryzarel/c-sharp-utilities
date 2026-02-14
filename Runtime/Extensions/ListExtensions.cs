@@ -7,8 +7,12 @@ namespace Kryz.Utils
 	{
 		public static void EnsureCapacity<T>(this List<T> list, int capacity)
 		{
-			if (list.Capacity.TryGetNewCapacity(capacity, out int newCapacity))
+			int current = list.Capacity;
+
+			if (capacity > current)
 			{
+				int newCapacity = current * 2;
+				if (newCapacity < capacity) newCapacity = current;
 				list.Capacity = newCapacity;
 			}
 		}

@@ -83,13 +83,9 @@ namespace Kryz.Utils
 
 		private void EnsureCapacity(int capacity)
 		{
-			if (array.Length.TryGetNewCapacity(capacity, out int newCapacity))
+			if (array.Length < capacity)
 			{
-				T[] oldArray = array;
-				array = arrayPool.Rent(newCapacity);
-				Array.Copy(oldArray, array, count);
-				Array.Clear(oldArray, 0, count);
-				arrayPool.Return(oldArray);
+				ArrayPoolUtils.Resize(ref array, count, capacity);
 			}
 		}
 

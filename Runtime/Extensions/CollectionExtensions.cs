@@ -6,18 +6,6 @@ namespace Kryz.Utils
 {
 	public static class CollectionExtensions
 	{
-		public static bool TryGetNewCapacity(this int currentCapacity, int desiredCapacity, out int newCapacity)
-		{
-			if (desiredCapacity > currentCapacity)
-			{
-				newCapacity = (int)Math.Min(int.MaxValue, (uint)currentCapacity * 2);
-				newCapacity = Math.Max(newCapacity, desiredCapacity);
-				return true;
-			}
-			newCapacity = currentCapacity;
-			return false;
-		}
-
 		public static void AddRangeNonAlloc<T>(this IList<T> list, IList<T> toAdd)
 		{
 			int count = toAdd.Count;
