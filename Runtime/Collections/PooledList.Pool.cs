@@ -12,9 +12,7 @@ namespace Kryz.Utils
 
 			public static PooledList<T> Rent(int capacity = 0, ArrayPool<T>? arrayPool = null)
 			{
-				LocalPool pool = threadLocalPool.Value;
-
-				if (pool.TryGet(out PooledList<T>? list))
+				if (threadLocalPool.Value.TryGet(out PooledList<T>? list))
 				{
 					return list.Init(capacity, arrayPool);
 				}
@@ -29,7 +27,7 @@ namespace Kryz.Utils
 
 		private sealed class LocalPool
 		{
-			// Maximum 128 pooled lists, prevent too much memory being used up, avoids resizing the pool
+			// Fixed size array for pooled lists. Limits memory usage and avoids resizes.
 			private readonly PooledList<T>[] pool = new PooledList<T>[128];
 			private int count;
 
