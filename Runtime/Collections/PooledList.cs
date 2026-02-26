@@ -223,25 +223,21 @@ namespace Kryz.Utils
 			}
 		}
 
-		public int RemoveAll<TEquatable>(TEquatable match) where TEquatable : IEquatable<T>
+		public int RemoveAll(Predicate<T> match)
 		{
-			int freeIndex = 0; // the first free slot in the array
+			if (match == null) throw new ArgumentNullException(nameof(match));
+
+			int freeIndex = 0; // the first free slot in items array
 
 			// Find the first item which needs to be removed.
-			while (freeIndex < count && !match.Equals(array[freeIndex]))
-			{
-				freeIndex++;
-			}
+			while (freeIndex < count && !match(array[freeIndex])) freeIndex++;
 			if (freeIndex >= count) return 0;
 
 			int current = freeIndex + 1;
 			while (current < count)
 			{
 				// Find the first item which needs to be kept.
-				while (current < count && match.Equals(array[current]))
-				{
-					current++;
-				}
+				while (current < count && match(array[current])) current++;
 
 				if (current < count)
 				{
@@ -250,7 +246,38 @@ namespace Kryz.Utils
 				}
 			}
 
-			Array.Clear(array, freeIndex, count - freeIndex);
+			Array.Clear(array, freeIndex, count - freeIndex); // Clear the elements so that the gc can reclaim the references.
+
+			int result = count - freeIndex;
+			count = freeIndex;
+			version++;
+			return result;
+		}
+
+		public int RemoveAll<TEquatable>(TEquatable match) where TEquatable : IEquatable<T>
+		{
+			if (match == null) throw new ArgumentNullException(nameof(match));
+
+			int freeIndex = 0; // the first free slot in items array
+
+			// Find the first item which needs to be removed.
+			while (freeIndex < count && !match.Equals(array[freeIndex])) freeIndex++;
+			if (freeIndex >= count) return 0;
+
+			int current = freeIndex + 1;
+			while (current < count)
+			{
+				// Find the first item which needs to be kept.
+				while (current < count && match.Equals(array[current])) current++;
+
+				if (current < count)
+				{
+					// copy item to the free slot.
+					array[freeIndex++] = array[current++];
+				}
+			}
+
+			Array.Clear(array, freeIndex, count - freeIndex); // Clear the elements so that the gc can reclaim the references.
 
 			int result = count - freeIndex;
 			count = freeIndex;
