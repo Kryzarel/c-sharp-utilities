@@ -10,7 +10,7 @@ namespace Kryz.Utils
 		public static void Resize<T>(ref T[] array, int oldSize, int newSize, ArrayPool<T> arrayPool)
 		{
 			T[] newArray = arrayPool.Rent(newSize);
-			Array.Copy(array, newArray, oldSize);
+			Array.Copy(array, newArray, Math.Min(oldSize, newSize));
 			Array.Clear(array, 0, oldSize);
 			arrayPool.Return(array);
 			array = newArray;
