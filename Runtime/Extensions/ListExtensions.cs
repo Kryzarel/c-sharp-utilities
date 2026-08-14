@@ -12,7 +12,11 @@ namespace Kryz.Utils
 			if (capacity > current)
 			{
 				int newCapacity = current * 2;
-				if (newCapacity < capacity) newCapacity = current;
+				// Note that this check works even when newCapacity overflowed thanks to the (uint) cast
+				if ((uint)newCapacity > int.MaxValue) newCapacity = int.MaxValue;
+				// If the computed capacity is still less than specified, set to the original argument.
+				if (newCapacity < capacity) newCapacity = capacity;
+
 				list.Capacity = newCapacity;
 			}
 		}
