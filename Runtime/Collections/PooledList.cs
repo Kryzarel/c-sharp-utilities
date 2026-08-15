@@ -317,7 +317,7 @@ namespace Kryz.Utils
 		{
 			if (array.Length < capacity)
 			{
-				ArrayPoolUtils.Resize(ref array, count, capacity);
+				ArrayPoolUtils.Resize(ref array, count, capacity, pool);
 			}
 		}
 
