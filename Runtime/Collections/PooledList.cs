@@ -223,35 +223,17 @@ namespace Kryz.Utils
 			}
 		}
 
+		private readonly struct PredicateMatch : IEquatable<T>
+		{
+			public readonly Predicate<T> Match;
+			public PredicateMatch(Predicate<T> match) => Match = match;
+			public bool Equals(T other) => Match(other);
+		}
+
 		public int RemoveAll(Predicate<T> match)
 		{
 			if (match == null) throw new ArgumentNullException(nameof(match));
-
-			int freeIndex = 0; // the first free slot in items array
-
-			// Find the first item which needs to be removed.
-			while (freeIndex < count && !match(array[freeIndex])) freeIndex++;
-			if (freeIndex >= count) return 0;
-
-			int current = freeIndex + 1;
-			while (current < count)
-			{
-				// Find the first item which needs to be kept.
-				while (current < count && match(array[current])) current++;
-
-				if (current < count)
-				{
-					// copy item to the free slot.
-					array[freeIndex++] = array[current++];
-				}
-			}
-
-			Array.Clear(array, freeIndex, count - freeIndex); // Clear the elements so that the gc can reclaim the references.
-
-			int result = count - freeIndex;
-			count = freeIndex;
-			version++;
-			return result;
+			return RemoveAll(new PredicateMatch(match));
 		}
 
 		public int RemoveAll<TEquatable>(TEquatable match) where TEquatable : IEquatable<T>
